@@ -95,7 +95,7 @@ void setup()
   Serial.begin(115200); // Assuming computer will be connected to serial port at 115200 bauds
   Serial.print("Setup...");
 
-  Serial1.begin(115200);
+  Serial1.begin(57600);
   
   // Add a handler for network events. This is misnamed "WiFi" because the ESP32 is historically WiFi only,
   // but in our case, this will react to Ethernet events.
@@ -110,11 +110,13 @@ void setup()
 
 void loop()
 {
+  Serial.print("(Local) ");
   Serial.print("ETH MAC: ");
   Serial.print(ETH.macAddress());
   Serial.print(", IPv4: ");
   Serial.println(ETH.localIP());
 
+  Serial1.print("(Remote) ");
   Serial1.print("ETH MAC: ");
   Serial1.print(ETH.macAddress());
   Serial1.print(", IPv4: ");
