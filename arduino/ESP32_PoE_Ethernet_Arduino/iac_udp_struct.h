@@ -1,6 +1,9 @@
 
 #include <stdint.h>
 
+const uint8_t version_StructIacTransponder = 0x01;  // 2025-02-21
+                                                    // Check on the ROS side the versions of the
+                                                    // structs you are getting are correct
 enum class VehicleStateTransponder
 {
   UNKNOWN,
@@ -9,9 +12,10 @@ enum class VehicleStateTransponder
   NOMINAL
 };
 
-union struct_iacTransponder
+struct __attribute__((packed)) StructIacTransponder
 {
-  uint64_t utc;                  // UTC time [ ms? ]
+  uint8_t version;               // Struct version
+  double utc;                    // UTC time [ s ]
   uint8_t car_id;                // Car ID [ - ]
   double lat;                    // Vehicle longitude [ dd.dd ]
   double lon;                    // Vehicle latitude [ dd.dd ]
@@ -19,3 +23,10 @@ union struct_iacTransponder
   VehicleStateTransponder state; // Vehicle state [ - ]
 };
 
+union TransponderUdpPacket
+{
+  StructIacTransponder data;
+  char raw[sizeof(StructIacTransponder)];
+};
+
+const uint SIZEOF_TransponderUdpPacket = sizeof(TransponderUdpPacket);

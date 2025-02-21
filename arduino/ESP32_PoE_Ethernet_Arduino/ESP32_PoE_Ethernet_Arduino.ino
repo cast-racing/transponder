@@ -17,7 +17,10 @@ const unsigned int localPort = 15782;  // UDP listening port
 const unsigned int remotePort = 15783; // Destination UDP port
 IPAddress remoteIP(192, 168, 1, 9); // Destination IP for UDP messages
 
-struct_iacTransponder packet_in, packet_out;
+const char headerA = '$';
+const char headerB = 'S'; 
+
+TransponderUdpPacket packet_in, packet_out;
 static bool eth_connected = false;
 
 // React to Ethernet events:
@@ -147,19 +150,55 @@ void loop()
   // delay(1000);
 }
 
+struct __attribute__((packed)) StructXbee
+{
+  char headerA = headerA;        // Header A
+  char headerB = headerB;        // UTC time [ ms? ]
+  TransponderUdpPacket data;     // Data
+  uint8_t crc8;                  // Checksum
+};
+
+union XbeePacket
+{
+  StructXbee data;
+  char raw[sizeof(StructXbee)];
+};
+
+const uint SIZEOF_XbeePacket = sizeof(XbeePacket);
+
 void process_udp()
 {
   // Receive UDP and send to Serial1
+  char buf[100];
+  
   int packetSize = udp.parsePacket();
-  if (packetSize)
+  if (packetSize == SIZEOF_TransponderUdpPacket)
   {
-    Serial.print(millis() + "UDP packet received\n");
-    char packetBuffer[255];
-    int len = udp.read(packetBuffer, 255);
-    if (len > 0) {
-      packetBuffer[len] = 0;
-      Serial1.write((uint8_t*)packetBuffer, len);
+    sprintf(buf,"%8d | UDP packet received (%d bytes)\n",millis(),packetSize); 
+    Serial.print(buf);
+    XbeePacket serial_out;
+
+    // Copy UDP packet into Xbee struct
+    int len = udp.read(serial_out.data.data, SIZEOF_TransponderUdpPacket);
+
+    if (len == SIZEOF_TransponderUdpPacket)
+    {
+        // Calculate checksum for Xbee struct
+        serial_out.data.crc8 = calc_crc8();
+
+        // Forward packet out via Serial1
+        Serial1.write((uint8_t*)serial_out.raw, len);
     }
+    else
+    {
+      sprintf(buf,"Read incorrect number of bytes. Got %d, expected %d\n",len,SIZEOF_TransponderUdpPacket); 
+      Serial.print("Packet size received incorrect");
+    }
+  }
+  else
+  {
+    sprintf(buf,"Packet size received incorrect. Got %d, expected %d\n",packetSize,SIZEOF_TransponderUdpPacket); 
+    Serial.print("Packet size received incorrect");
   }
 
   // Read from Serial1 and send as UDP
@@ -170,4 +209,9 @@ void process_udp()
     udp.write(c);
     udp.endPacket();
   }
+}
+
+uint8_t calc_crc8()
+{
+  return 0xFF;
 }
