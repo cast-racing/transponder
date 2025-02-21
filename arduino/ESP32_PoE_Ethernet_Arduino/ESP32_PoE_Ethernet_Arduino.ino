@@ -1,13 +1,24 @@
-/*
-  This sketch will log Ethernet events to the serial console
-  It will also log the MAC address and current IP address every second (IP can be assigned by DHCP)
-*/
 
 #include <ETH.h>
 #include <WiFi.h>
+#include <WiFiUdp.h>
 
+#include "iac_udp_struct.h"
+
+// Static IP configuration
+IPAddress local_IP(192, 168, 1, 100);
+IPAddress gateway(192, 168, 1, 1);
+IPAddress subnet(255, 255, 255, 0);
+IPAddress dns(8, 8, 8, 8);
+
+// Globals
+WiFiUDP udp;
+const unsigned int localPort = 15782;  // UDP listening port
+const unsigned int remotePort = 15783; // Destination UDP port
+IPAddress remoteIP(192, 168, 1, 9); // Destination IP for UDP messages
+
+struct_iacTransponder packet_in, packet_out;
 static bool eth_connected = false;
-
 
 // React to Ethernet events:
 void WiFiEvent(WiFiEvent_t event)
@@ -17,6 +28,7 @@ void WiFiEvent(WiFiEvent_t event)
     case ARDUINO_EVENT_ETH_START:
       // This will happen during setup, when the Ethernet service starts
       Serial.println("ETH Started");
+      ETH.config(local_IP, gateway, subnet, dns);
       //set eth hostname here
       ETH.setHostname("esp32-ethernet");
       break;
@@ -105,28 +117,57 @@ void setup()
   // Starth Ethernet (this does NOT start WiFi at the same time)
   Serial.print("Starting ETH interface...");
   ETH.begin();
+
+  udp.begin(localPort);
+
 }
 
 
 void loop()
 {
-  Serial.print("(Local) ");
-  Serial.print("ETH MAC: ");
-  Serial.print(ETH.macAddress());
-  Serial.print(", IPv4: ");
-  Serial.println(ETH.localIP());
+  // Serial.print("(Local) ");
+  // Serial.print("ETH MAC: ");
+  // Serial.print(ETH.macAddress());
+  // Serial.print(", IPv4: ");
+  // Serial.println(ETH.localIP());
 
-  Serial1.print("(Remote) ");
-  Serial1.print("ETH MAC: ");
-  Serial1.print(ETH.macAddress());
-  Serial1.print(", IPv4: ");
-  Serial1.println(ETH.localIP());
+  // Serial1.print("(Remote) ");
+  // Serial1.print("ETH MAC: ");
+  // Serial1.print(ETH.macAddress());
+  // Serial1.print(", IPv4: ");
+  // Serial1.println(ETH.localIP());
 
   while (Serial1.available())
   {
     Serial.print(Serial1.read());
   }
 
+  process_udp();
 
-  delay(1000);
+  // delay(1000);
+}
+
+void process_udp()
+{
+  // Receive UDP and send to Serial1
+  int packetSize = udp.parsePacket();
+  if (packetSize)
+  {
+    Serial.print(millis() + "UDP packet received\n");
+    char packetBuffer[255];
+    int len = udp.read(packetBuffer, 255);
+    if (len > 0) {
+      packetBuffer[len] = 0;
+      Serial1.write((uint8_t*)packetBuffer, len);
+    }
+  }
+
+  // Read from Serial1 and send as UDP
+  while (Serial1.available())
+  {
+    char c = Serial1.read();
+    udp.beginPacket(remoteIP, remotePort);
+    udp.write(c);
+    udp.endPacket();
+  }
 }
