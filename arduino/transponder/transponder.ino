@@ -8,9 +8,8 @@
 
 // IP settings
 IPAddress local_IP(192, 168, 1, 100);      // IP Address of the Transponder
-IPAddress ip_send_(192, 168, 1, 9);        // Destination IP for UDP messages
-const unsigned int port_receive_ = 15783;  // UDP listening port
-const unsigned int port_send_ = 15782;     // Destination UDP port
+IPAddress ip_send_(192, 168, 1, 9);        // Destination IP for UDP messages (ROS2 computer)
+const unsigned int port_ = 15783;          // UDP port
 
 // Globals
 WiFiUDP udp;
@@ -54,10 +53,6 @@ void WiFiEvent(WiFiEvent_t event)
       Serial.print(ETH.linkSpeed());
       Serial.println("Mbps");
       eth_connected = true;
-
-      // Uncomment to automatically make a test connection to a server:
-      // testClient( "192.168.0.1", 80 );
-
       break;
 
     case ARDUINO_EVENT_ETH_DISCONNECTED:
@@ -98,7 +93,7 @@ void setup()
   Serial.print("Starting ETH interface...");
   ETH.begin();
 
-  udp.begin(port_receive_);
+  udp.begin(port_);
 
 }
 
@@ -241,7 +236,7 @@ void xbee_state_machine(char x)
           // Data good, send via UDP
           // Serial.print("Sending UDP packet\n");
 
-          udp.beginPacket(ip_send_, port_send_);
+          udp.beginPacket(ip_send_, port_);
           udp.write((uint8_t*)data.raw, SIZEOF_TransponderUdpPacket);
           udp.endPacket();
 

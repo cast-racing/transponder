@@ -31,3 +31,14 @@ The node then publishes the data out as a `transponder_msgs::msg::Transponder` o
     - https://www.digikey.com/en/products/detail/te-connectivity-linx/ANT-2-4-LCW-RPS/9607800
   - Antenna (large)
     - https://www.digikey.com/en/products/detail/taoglas-limited/FW-24-SMA-M/7035228
+
+## Component Setup
+### ESP32-PoE-ISO
+Software can be flashed using Arduino
+1. Change the network settings in `arduino/transponder/transponder.ino` to match your network
+1. Upload as `OLIMEX ESP32-POE-ISO` board type.  Requires the [Arduino-ESP32 package](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html). 
+
+### XBee
+1. Download XCTU, and apply the profile in `xbee/iac_default.pro`.
+1. Power cycle the XBee.  The baud rate will be switched to 57600 baud.
+1. Connect again and set the Node ID to the car number
