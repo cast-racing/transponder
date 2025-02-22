@@ -16,8 +16,7 @@
 #include <unistd.h>
 
 #include "std_msgs/msg/string.hpp"
-#include "sensor_msgs/msg/nav_sat_fix.hpp"
-#include "iac_msgs/msg/competitor_estimate.hpp"
+#include "transponder_msgs/msg/transponder.hpp"
 
 #include "iac_udp_struct.h"
 
@@ -30,23 +29,24 @@ public:
 private:
 
     // Subscribers / Publishers / Timers
-    rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr subNavSatFix_;
+    rclcpp::Subscription<transponder_msgs::msg::Transponder>::SharedPtr sub_Transponder_;
 
-    rclcpp::Publisher<iac_msgs::msg::CompetitorEstimate>::SharedPtr pubCompetitorEsimate_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pubVersion_;
+    rclcpp::Publisher<transponder_msgs::msg::Transponder>::SharedPtr pub_Transponder_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_Version_;
 
     rclcpp::TimerBase::SharedPtr timer_1Hz_, timer_10s_;
     rclcpp::TimerBase::SharedPtr timer_debug_;
 
     // Threads
-    TransponderUdpPacket udp_out_;
+    std::thread receive_data_thread_;
 
     // Variables
-    sockaddr_in receiver_addr_;
+    sockaddr_in send_addr_;
+
     char buffer_[1024];
     struct sockaddr_in client_addr_;
     socklen_t addr_len_ = sizeof(client_addr_);
-    int socket_fd;
+    int read_addr_; //socket_fd;
 
     rclcpp::Time t_last_flag_ = this->get_clock()->now();
     double t_Udp_timeout_; // Switch to a parameter tonight
@@ -58,19 +58,17 @@ private:
 
     uint8_t car_id_ = 8;
 
-    std::thread receive_data_thread_;
-
 
     // Functions
     void init_udp();
     void init_ros();
 
-    void push_udp();
-    void push_ros();
+    void push_udp(StructIacTransponder data);
+    // void push_ros();
 
     void read_udpData();
 
-    void callback_NavSatFix(const sensor_msgs::msg::NavSatFix::SharedPtr msg);
+    void callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg);
     
     void callback_1Hz();
     void callback_10s();

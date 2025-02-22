@@ -9,8 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(iac_msgs REQUIRED)
+find_package(transponder_msgs REQUIRED)
 
 # git hash and branch
 execute_process(
@@ -43,8 +42,7 @@ add_executable(transponder2ros_node src/transponder2ros_node.cpp
     ament_target_dependencies(transponder2ros_node 
         rclcpp
         std_msgs
-        sensor_msgs
-        iac_msgs
+        transponder_msgs
     )
     install(TARGETS
       transponder2ros_node

@@ -32,8 +32,9 @@ def generate_launch_description():
         # namespace='transponder',
         # arguments=[('__log_level:=debug')]),
         parameters=[
-            {'navsatfix_in': '/in'},
-            {'competitor_out': '/out'},
+            {'transponder_in': '/in'},
+            {'transponder_out': '/out'},
+            {'version_out': '/version'},
             LaunchConfiguration('robot'),
         ]
     )
