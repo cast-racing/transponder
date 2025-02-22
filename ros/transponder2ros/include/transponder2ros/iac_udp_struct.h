@@ -3,16 +3,9 @@
 
 #include <stdint.h>
 
-const uint8_t TRANSPONDER_UDP_STRUCT_VERISON = 0x01;  // 2025-02-21
+const uint8_t TRANSPONDER_UDP_STRUCT_VERISON = 0x02;  // 2025-02-21
                                                       // Check on the ROS side the versions of the
                                                       // structs you are getting are correct
-enum class VehicleStateTransponder
-{
-  UNKNOWN,
-  EMERGENCY_STOP,
-  CONTROLLED_STOP,
-  NOMINAL
-};
 
 struct __attribute__((packed)) StructIacTransponder
 {
@@ -22,7 +15,7 @@ struct __attribute__((packed)) StructIacTransponder
   double lat;                    // Vehicle longitude [ dd.dd ]
   double lon;                    // Vehicle latitude [ dd.dd ]
   float vel;                     // Vehicle speed [ m/s ]
-  VehicleStateTransponder state; // Vehicle state [ - ]
+  uint8_t state;                 // Vehicle state [ - ], see transponder_msgs::msg::Transponder
 };
 
 union TransponderUdpPacket

@@ -8,6 +8,7 @@
 #include <chrono>
 #include <functional>
 #include <mutex>
+#include <cstring>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -35,7 +36,6 @@ private:
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_Version_;
 
     rclcpp::TimerBase::SharedPtr timer_1Hz_, timer_10s_;
-    rclcpp::TimerBase::SharedPtr timer_debug_;
 
     // Threads
     std::thread receive_data_thread_;
@@ -48,8 +48,9 @@ private:
     socklen_t addr_len_ = sizeof(client_addr_);
     int read_addr_; //socket_fd;
 
-    rclcpp::Time t_last_flag_ = this->get_clock()->now();
-    double t_Udp_timeout_; // Switch to a parameter tonight
+    rclcpp::Time t_last_packet_ = this->get_clock()->now();
+    double t_Udp_maxAge_;   // Max age of UDP packets to accept
+    double t_Udp_timeout_;  // Timeout before warning user of no packets
     bool has_timeout_ = false;
 
     int sockfd_ = socket(AF_INET,SOCK_DGRAM,0);
@@ -58,20 +59,16 @@ private:
 
     uint8_t car_id_ = 8;
 
-
     // Functions
     void init_udp();
     void init_ros();
 
     void push_udp(StructIacTransponder data);
-    // void push_ros();
-
     void read_udpData();
 
     void callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg);
     
     void callback_1Hz();
     void callback_10s();
-    void callback_debug();
   
 };

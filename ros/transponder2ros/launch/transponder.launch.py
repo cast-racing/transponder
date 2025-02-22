@@ -29,12 +29,27 @@ def generate_launch_description():
         executable='transponder2ros_node',
         name='transponder_node',
         output='screen',
-        # namespace='transponder',
+        namespace='transponder',
         # arguments=[('__log_level:=debug')]),
         parameters=[
-            {'transponder_in': '/in'},
-            {'transponder_out': '/out'},
-            {'version_out': '/version'},
+            {'transponder_in': 'in'},
+            {'transponder_out': 'out'},
+            {'version_out': 'version'},
+            LaunchConfiguration('robot'),
+        ]
+    )
+    ld.add_action(node)
+
+    # Data faker node
+    node = Node(
+        package='transponder2ros',
+        executable='debug_node',
+        name='data_node',
+        output='screen',
+        namespace='transponder',
+        # arguments=[('__log_level:=debug')]),
+        parameters=[
+            {'topic': 'out'},
             LaunchConfiguration('robot'),
         ]
     )

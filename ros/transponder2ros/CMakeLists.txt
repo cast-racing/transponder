@@ -49,6 +49,18 @@ add_executable(transponder2ros_node src/transponder2ros_node.cpp
         DESTINATION lib/${PROJECT_NAME}
     )
 
+  add_executable(debug_node src/debug_node.cpp
+    )
+    ament_target_dependencies(debug_node 
+        rclcpp
+        std_msgs
+        transponder_msgs
+    )
+    install(TARGETS
+      debug_node
+        DESTINATION lib/${PROJECT_NAME}
+    )
+
 # Copy over config and launch files
 install(DIRECTORY
   # config
