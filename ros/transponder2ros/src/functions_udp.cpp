@@ -23,7 +23,7 @@ void transponder2ros::init_udp()
     sockfd_ = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (sockfd_ < 0) {
-        RCLCPP_ERROR(this->get_logger(), "transponder failed to create socket");
+        RCLCPP_ERROR(this->get_logger(), "Transponder failed to create socket");
         rclcpp::shutdown();
     }
 
@@ -138,7 +138,7 @@ void transponder2ros::read_udpData()
             if (abs(msg_tDiff) > t_Udp_timeout_)
             {
                 RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
-                                        "UDP transponder packet late by %.3f s", msg_tDiff);
+                                        "Transponder UPD packet late by %.3f s", msg_tDiff);
                 continue;
             }
 
@@ -165,7 +165,7 @@ void transponder2ros::read_udpData()
             // Update user if reconnected
             if (has_timeout_)
             {
-                RCLCPP_INFO(this->get_logger(), "Transponder UDP connected");
+                RCLCPP_INFO(this->get_logger(), "Transponder connected");
                 has_timeout_ = false;
             }
 
