@@ -27,6 +27,10 @@ void transponder2ros::init_udp()
     receiver_addr_.sin_addr.s_addr = inet_addr(param_ip_address.c_str());
     receiver_addr_.sin_port = htons(param_port);
 
+    // UDP socket listener
+    receive_data_thread_ = std::thread(&transponder2ros::read_udpData, this);
+
+
     // All done
     return;
 }
@@ -60,3 +64,89 @@ void transponder2ros::push_udp()
     return;
 }
 
+
+void transponder2ros::read_udpData()
+{
+
+    // Listen to UDP port and convert data to ROS2 topics
+    while (rclcpp::ok())
+    {
+        // Get available data
+        ssize_t len = recvfrom(socket_fd, buffer_, sizeof(buffer_) - 1, 0, (struct sockaddr *)&client_addr_, &addr_len_);
+
+        if (len > 0)
+        {
+            // RCLCPP_INFO(this->get_logger(), "Got %ld bytes", len);
+
+            switch (len)
+            {
+            case (SIZEOF_TransponderUdpPacket):
+            {
+
+                // Teleop UDP Packet
+                TransponderUdpPacket transponder;
+
+                // std::lock_guard<std::mutex> lock(lock_);
+                std::memcpy(&transponder.data, &buffer_, SIZEOF_TransponderUdpPacket);
+
+                // Reject if message is too old
+                double msg_tDiff = this->get_clock()->now().seconds() - transponder.data.utc;
+
+                // RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 5000, "Latency: %.3f s", msg_tDiff);
+
+                if (abs(msg_tDiff) > t_Udp_timeout_)
+                {
+                    RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
+                                         "UDP transponder packet late by %.3f s", msg_tDiff);
+                    continue;
+                }
+
+                // Print the data (debug)
+
+                
+
+                // Publish the data
+                // teleop_msgs::msg::Teleop msg_Teleop;
+
+                // msg_Teleop.header.stamp = this->get_clock()->now();
+                // msg_Teleop.header.frame_id = "teleop (udp)";
+
+                // msg_Teleop.throttle = msg.data.accelerator;
+                // msg_Teleop.brake = msg.data.brake;
+                // msg_Teleop.steering = msg.data.steering;
+                // msg_Teleop.gear = msg.data.gear;
+                // msg_Teleop.in_command.in_command = msg.data.command;
+                // msg_Teleop.arm.state = msg.data.armed;
+                // pubDrive_->publish(msg_Teleop);
+
+                // Update our last received time
+                t_last_flag_ = this->get_clock()->now();
+
+                // Update user if reconnected
+                if (has_timeout_)
+                {
+                    RCLCPP_INFO(this->get_logger(), "Transponder UDP connected");
+                    has_timeout_ = false;
+                }
+
+                // Debugging
+                if (0)
+                {
+                    RCLCPP_INFO(this->get_logger(), "lat: %8.3f, lon: %8.3f",
+                        transponder.data.lat, transponder.data.lon
+                    );
+                }
+
+                break;
+            }
+            default:
+            {
+                RCLCPP_INFO(this->get_logger(), "Unrecognised packet length of %ld bytes", len);
+                break;
+            }
+            }
+        }
+    }
+    // All done
+    return;
+}

@@ -12,6 +12,23 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(iac_msgs REQUIRED)
 
+# git hash and branch
+execute_process(
+    COMMAND git describe --abbrev=7 --dirty --always --tags
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    
+add_definitions(-DGIT_INFO="${GIT_BRANCH} - ${GIT_VERSION}")
+
 # Includes
 include_directories(
     include
