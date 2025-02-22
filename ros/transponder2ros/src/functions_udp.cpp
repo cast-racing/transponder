@@ -142,9 +142,9 @@ void transponder2ros::read_udpData()
             // Publish the data
             transponder_msgs::msg::Transponder msg;
 
-            int64_t nanoseconds = static_cast<int64_t>(transponder.data.utc * 1e9); // There should be a better way of doing this
-            msg.header.stamp.sec = static_cast<int32_t>(nanoseconds / 1e9);
-            msg.header.stamp.nanosec = static_cast<uint32_t>(nanoseconds % static_cast<int64_t>(1e9));
+            rclcpp::Time utc(transponder.data.utc);
+            msg.header.stamp.sec = utc.seconds();
+            msg.header.stamp.nanosec = utc.nanoseconds();
         
             msg.header.frame_id = "map";
 
@@ -152,7 +152,7 @@ void transponder2ros::read_udpData()
             msg.lat = transponder.data.lat;
             msg.lon = transponder.data.lon;
             msg.vel = transponder.data.vel;
-            // msg.state = transponder.data.state;
+            msg.state = static_cast<uint8_t>(transponder.data.state);
 
             pub_Transponder_->publish(msg);
 
