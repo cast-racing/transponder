@@ -57,8 +57,6 @@ private:
 
     std::mutex lock_;
 
-    uint8_t car_id_ = 8;
-
     // Functions
     void init_udp();
     void init_ros();

@@ -1,27 +1,12 @@
 
 # Launch file for the transponder
 
-import os
-
-from ament_index_python import get_package_share_directory
-
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
 
 def generate_launch_description():
 
     ld = LaunchDescription()
-
-    # Robot config
-    config_dir = os.path.join(
-        get_package_share_directory('robot_description'),
-        'config',
-        'av24.yaml'
-    )
-    robot_arg = DeclareLaunchArgument('robot', default_value=config_dir)
-    ld.add_action(robot_arg)
 
     # Node for interfacing with the transponder
     node = Node(
@@ -30,27 +15,29 @@ def generate_launch_description():
         name='transponder_node',
         output='screen',
         namespace='transponder',
-        # arguments=[('__log_level:=debug')]),
         parameters=[
-            {'transponder_in': 'in'},
-            {'transponder_out': 'out'},
-            {'version_out': 'version'},
-            LaunchConfiguration('robot'),
-        ]
+            # ROS network
+            {'transponder_in': 'in'},    # Topic for data from the transponder
+            {'transponder_out': 'out'},  # Topic for data to the transponder
+            {'version_out': 'version'},  # Topic to print version information
+            # Transponder network
+            {'ros_ip': '127.0.0.1'},     # IP address of the computer running ros2
+            {'udp_port': 15783},         # UDP port to communicate on (match transponder)
+            {'max_age':  1.0},           # Max age of packets, otherwise reject [ s ]
+            {'timeout': 10.0},           # Time before notifying of no packets [ s ]
+        ],
     )
     ld.add_action(node)
 
-    # Data faker node
+    # Data faker node (for debugging)
     node = Node(
         package='transponder2ros',
         executable='debug_node',
         name='data_node',
         output='screen',
         namespace='transponder',
-        # arguments=[('__log_level:=debug')]),
         parameters=[
-            {'topic': 'out'},
-            LaunchConfiguration('robot'),
+            {'topic': 'out'},           # Topic to send out fake to transponder messages
         ]
     )
     ld.add_action(node)

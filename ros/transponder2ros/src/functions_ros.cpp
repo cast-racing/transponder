@@ -41,7 +41,7 @@ void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transpon
 
     transponder.version = TRANSPONDER_UDP_STRUCT_VERISON;   // Struct version
     transponder.utc = utc.seconds();                        // UTC time [ s ]
-    transponder.car_id = car_id_;                           // Car ID [ - ]
+    transponder.car_id = msg->car_id;                       // Car ID [ - ]
     transponder.lat = msg->lat;                             // Vehicle longitude [ dd.dd ]
     transponder.lon = msg->lon;                             // Vehicle latitude [ dd.dd ]
     transponder.vel = msg->vel;                             // Vehicle speed [ m/s ]
