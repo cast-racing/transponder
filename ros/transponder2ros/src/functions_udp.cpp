@@ -94,8 +94,11 @@ void transponder2ros::push_udp(StructIacTransponder data)
     }
     else
     {
-        RCLCPP_INFO(this->get_logger(), "Sent %ld bytes", sent_bytes);
-        RCLCPP_INFO(this->get_logger(), "Time %f", udp_packet.data.utc);
+        if (0)
+        {
+            RCLCPP_INFO(this->get_logger(), "Sent %ld bytes", sent_bytes);
+            RCLCPP_INFO(this->get_logger(), "Time %f", udp_packet.data.utc);
+        }
     }
 
     // Debugging
@@ -167,7 +170,7 @@ void transponder2ros::read_udpData()
             }
 
             // Debugging
-            if (1)
+            if (0)
             {
                 RCLCPP_INFO(this->get_logger(), "lat: %8.3f, lon: %8.3f",
                     transponder.data.lat, transponder.data.lon
