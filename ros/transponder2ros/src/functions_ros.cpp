@@ -30,9 +30,6 @@ void transponder2ros::init_ros()
         std::chrono::seconds(10),
         std::bind(&transponder2ros::callback_10s, this));
 
-    timer_debug_ = this->create_wall_timer(
-        std::chrono::milliseconds(1 * 1000),
-        std::bind(&transponder2ros::callback_debug, this));
 }
 
 void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg)
@@ -42,35 +39,14 @@ void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transpon
 
     rclcpp::Time utc(msg->header.stamp);
 
-    transponder.version = TRANSPONDER_UDP_STRUCT_VERISON;                   // Struct version
-    transponder.utc = utc.seconds();                                        // UTC time [ s ]
-    transponder.car_id = car_id_;                                           // Car ID [ - ]
-    transponder.lat = msg->lat;                                             // Vehicle longitude [ dd.dd ]
-    transponder.lon = msg->lon;                                             // Vehicle latitude [ dd.dd ]
-    transponder.vel = msg->vel;                                             // Vehicle speed [ m/s ]
-    transponder.state = static_cast<VehicleStateTransponder>(msg->state);   // Vehicle state [ - ]
+    transponder.version = TRANSPONDER_UDP_STRUCT_VERISON;   // Struct version
+    transponder.utc = utc.seconds();                        // UTC time [ s ]
+    transponder.car_id = msg->car_id;                       // Car ID [ - ]
+    transponder.lat = msg->lat;                             // Vehicle longitude [ dd.dd ]
+    transponder.lon = msg->lon;                             // Vehicle latitude [ dd.dd ]
+    transponder.vel = msg->vel;                             // Vehicle speed [ m/s ]
+    transponder.state = msg->state;                         // Vehicle state [ - ]
   
-    // Push data
-    push_udp(transponder);
-
-    // Done
-    return;
-}
-
-void transponder2ros::callback_debug()
-{
-    // Push a fake packet out
-
-    static StructIacTransponder transponder;
-
-    transponder.version = TRANSPONDER_UDP_STRUCT_VERISON;    // Struct version
-    transponder.utc = this->get_clock()->now().seconds();    // UTC time [ s ]
-    transponder.car_id = car_id_;                            // Car ID [ - ]
-    transponder.lat = transponder.lat + 0.1;                 // Vehicle longitude [ dd.dd ]
-    transponder.lon = transponder.lon - 0.1;                 // Vehicle latitude [ dd.dd ]
-    transponder.vel = transponder.vel + 0.2;                 // Vehicle speed [ m/s ]
-    transponder.state = VehicleStateTransponder::NOMINAL;    // Vehicle state [ - ]
-    
     // Push data
     push_udp(transponder);
 
@@ -81,7 +57,7 @@ void transponder2ros::callback_debug()
 void transponder2ros::callback_1Hz()
 {
 
-    rclcpp::Duration t_since_last_msg = this->get_clock()->now() - t_last_flag_;
+    rclcpp::Duration t_since_last_msg = this->get_clock()->now() - t_last_packet_;
     static bool notified_timeout_silence = false;
 
     // Check timeouts (only used for printing in this case)

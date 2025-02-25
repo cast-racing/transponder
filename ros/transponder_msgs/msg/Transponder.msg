@@ -7,3 +7,9 @@ float64 lat             # Vehicle longitude, centre of rear axle [ dd.dd ]
 float64 lon             # Vehicle latitude, centre of rear axle [ dd.dd ]
 float32 vel             # Vehicle speed, Vx_body [ m/s ]
 uint8  state            # Vehicle state, see iac_udp_struct.h [ - ]
+
+# Vehicle states
+uint8 STATE_UNKNOWN = 0
+uint8 STATE_EMERGENCY_STOP = 1
+uint8 STATE_CONTROLLED_STOP = 2
+uint8 STATE_NOMINAL = 3
