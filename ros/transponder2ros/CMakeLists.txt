@@ -5,11 +5,19 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+## Find GeographicLib
+# Append to CMAKE_MODULE_PATH since debian/ubuntu installs
+# FindGeographicLib.cmake in a nonstand location
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/usr/share/cmake/geographiclib")
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geographic_msgs REQUIRED)
 find_package(transponder_msgs REQUIRED)
+find_package(GeographicLib REQUIRED)
 
 # git hash and branch
 execute_process(
@@ -49,8 +57,7 @@ add_executable(transponder2ros_node src/transponder2ros_node.cpp
         DESTINATION lib/${PROJECT_NAME}
     )
 
-  add_executable(debug_node src/debug_node.cpp
-    )
+add_executable(debug_node src/debug_node.cpp)
     ament_target_dependencies(debug_node 
         rclcpp
         std_msgs
@@ -58,6 +65,20 @@ add_executable(transponder2ros_node src/transponder2ros_node.cpp
     )
     install(TARGETS
       debug_node
+        DESTINATION lib/${PROJECT_NAME}
+    )
+
+add_executable(odom2transponder_node src/odom2transponder_node.cpp)
+    ament_target_dependencies(odom2transponder_node 
+        rclcpp
+        std_msgs
+        nav_msgs
+        geographic_msgs
+        transponder_msgs
+        GeographicLib
+    )
+    install(TARGETS
+    odom2transponder_node
         DESTINATION lib/${PROJECT_NAME}
     )
 

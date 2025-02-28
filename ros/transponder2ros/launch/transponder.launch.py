@@ -29,6 +29,24 @@ def generate_launch_description():
     )
     ld.add_action(node)
 
+    # Odom 2 Transponder Node
+    node = Node(
+        package="transponder2ros",
+        executable="odom2transponder_node",
+        name="odom2trans",
+        output="screen",
+        namespace="transponder",
+        parameters=[
+                {'odometry_in' : '/state/odom'},    # Odometry in topic
+                {'transponder_out' : 'out'},        # Transponder out topic
+                {'car_id' : 1},                     # Car ID
+                {'lat0' : 45.61898},   # Monza      # Reference lla
+                {'lon0' : 9.2811880},
+                {'alt0' : 176.61984507},
+        ],
+    )
+    # ld.add_action(node)
+
     # Data faker node (for debugging)
     node = Node(
         package='transponder2ros',
@@ -40,6 +58,6 @@ def generate_launch_description():
             {'topic': 'out'},           # Topic to send out fake to transponder messages
         ]
     )
-    ld.add_action(node)
+    # ld.add_action(node)
 
     return ld

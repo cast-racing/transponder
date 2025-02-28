@@ -12,12 +12,12 @@ void transponder2ros::init_ros()
     std::string param_versionOut = this->get_parameter("version_out").as_string();
 
     // Publishers
-    pub_Transponder_ = this->create_publisher<transponder_msgs::msg::Transponder>(param_transponderOut, 1);
+    pub_Transponder_ = this->create_publisher<transponder_msgs::msg::Transponder>(param_transponderIn, 1);
     pub_Version_ = this->create_publisher<std_msgs::msg::String>(param_versionOut, 10);
 
     // Subscribers
     sub_Transponder_ = this->create_subscription<transponder_msgs::msg::Transponder>(
-        param_transponderIn,
+        param_transponderOut,
         1,
         std::bind(&transponder2ros::callback_Transponder, this, std::placeholders::_1));
 
@@ -76,7 +76,9 @@ void transponder2ros::callback_1Hz()
     if (has_timeout_ && t_since_last_msg.seconds() < 30.0)
     {
         // Timeout
-        RCLCPP_WARN(this->get_logger(), "No UDP transponder data for %.1f s", t_since_last_msg.seconds());
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5UL * 1000 * 1000,
+            "No UDP transponder data for %.1f s", t_since_last_msg.seconds()
+        );
     }
     else if (t_since_last_msg.seconds() > 30.0 && notified_timeout_silence == 0)
     {

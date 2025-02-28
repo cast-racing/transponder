@@ -9,6 +9,11 @@ Features
 - ROS2 node example
 - Powered via PoE
 
+## Installation
+All dependencies on the ROS2 side can be installed via rosdep.
+From your main workspace folder, run `rosdep install --from-paths src --ignore-src -r -y`.
+If you have trouble with finding geographiclibs, debian/ubuntu installs `FindGeographicLib.cmake` in a nonstand location, but this should be covered in the `CMakeLists.txt` file.
+
 ## Theory of Operation
 The ESP32-PoE-ISO listens to UDP packets published from the ROS2 node `ros2 run transponder2ros transponder2ros_node`.
 These are then packaged with a header and a checksum and sent out as serial data over the xbee network to all the available nodes.
