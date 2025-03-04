@@ -7,16 +7,17 @@
 #include "xbee_struct.h"
 
 // IP settings
-IPAddress local_IP(192, 168, 1, 100);      // IP Address of the Transponder
-IPAddress ip_send_(192, 168, 1, 9);        // Destination IP for UDP messages (ROS2 computer)
+// IPAddress local_IP(192, 168, 1, 100);      // IP Address of the Transponder
+IPAddress local_IP("10.42.8.60");          // IP Address of the Transponder
+IPAddress ip_send_("10.42.8.200");         // Destination IP for UDP messages (ROS2 computer)
 const unsigned int port_ = 15783;          // UDP port
 
 // Globals
 WiFiUDP udp;
 
-IPAddress gateway(192, 168, 1, 1);
-IPAddress subnet(255, 255, 255, 0);
-IPAddress dns(8, 8, 8, 8);
+IPAddress gateway("10.42.8.200");
+IPAddress subnet("255.255.255.0");
+IPAddress dns("8.8.8.8");
 
 static bool eth_connected = false;
 
@@ -121,7 +122,7 @@ void process_udp()
     // Debugging
     if (1)
     {
-      Serial.print("\nSending via XBee\n");
+      Serial.print("\nReceived from UDP / send XBee\n");
       sprintf(buf_, "    Version: %d\n"    ,xbee_packet.data.data.data.version); Serial.print(buf_);
       sprintf(buf_, "       Time: %8.2f\n" ,xbee_packet.data.data.data.utc); Serial.print(buf_);
       sprintf(buf_, "        Car: %d\n"    ,xbee_packet.data.data.data.car_id); Serial.print(buf_);
@@ -241,9 +242,9 @@ void xbee_state_machine(char x)
           udp.endPacket();
 
           // Debugging
-          if (0)
+          if (1)
           {
-            Serial.print("\nSending via UDP\n");
+            Serial.print("\nReceived from XBee / Send UDP\n");
             sprintf(buf_, "    Version: %d\n"    ,data.data.version); Serial.print(buf_);
             sprintf(buf_, "       Time: %8.2f\n" ,data.data.utc); Serial.print(buf_);
             sprintf(buf_, "        Car: %d\n"    ,data.data.car_id); Serial.print(buf_);
