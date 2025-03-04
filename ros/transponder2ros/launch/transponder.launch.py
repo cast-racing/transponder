@@ -39,7 +39,7 @@ def generate_launch_description():
         parameters=[
                 {'odometry_in' : '/state/odom'},    # Odometry in topic
                 {'transponder_out' : 'out'},        # Transponder out topic
-                {'car_id' : 1},                     # Car ID
+                {'car' : 1},                        # Car ID
                 {'lat0' : 45.61898},   # Monza      # Reference lla
                 {'lon0' : 9.2811880},
                 {'alt0' : 176.61984507},

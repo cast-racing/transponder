@@ -36,8 +36,8 @@ public:
         lla0_.longitude = this->get_parameter("lon0").as_double();
         lla0_.altitude = this->get_parameter("alt0").as_double();
 
-        this->declare_parameter<int>("car_id", 1);
-        car_id_ = this->get_parameter("car_id").as_int();
+        this->declare_parameter<int>("car", 1);  // Car number
+        car_id_ = this->get_parameter("car").as_int();
 
         // Publishers
         pub_Transponder_ = this->create_publisher<transponder_msgs::msg::Transponder>(param_transponderOut, 1);
@@ -60,13 +60,13 @@ private:
     void callback_pushTransponder()
     {
         // Check timestamp is reasonable
-        rclcpp::Duration t_late_by = this->get_clock()->now() - odom_.header.stamp;
-        if (t_late_by.seconds() > 1.0)
-        {
-            // RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5UL * 1000 * 1000, "Odom late by %.1f",t_late_by.seconds());
-            RCLCPP_WARN(this->get_logger(), "Odom late by %.1f",t_late_by.seconds());
-            return;
-        }
+        // rclcpp::Duration t_late_by = this->get_clock()->now() - odom_.header.stamp;
+        // if (t_late_by.seconds() > 1.0)
+        // {
+        //     // RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5UL * 1000 * 1000, "Odom late by %.1f",t_late_by.seconds());
+        //     RCLCPP_WARN(this->get_logger(), "Odom late by %.1f",t_late_by.seconds());
+        //     return;
+        // }
 
         // Convert enu to lla
         geographic_msgs::msg::GeoPoint lla = enu_to_lla_geodetic(odom_.pose.pose.position, lla0_);
