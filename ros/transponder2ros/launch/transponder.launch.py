@@ -17,14 +17,14 @@ def generate_launch_description():
         namespace='transponder',
         parameters=[
             # ROS network
-            {'transponder_in': 'in'},    # Topic for data from the transponder
-            {'transponder_out': 'out'},  # Topic for data to the transponder
-            {'version_out': 'version'},  # Topic to print version information
+            {'transponder_in': 'in'},         # Topic for data from the transponder
+            {'transponder_out': 'out'},       # Topic for data to the transponder
+            {'version_out': 'version'},       # Topic to print version information
             # Transponder network
-            {'ros_ip': '127.0.0.1'},     # IP address of the computer running ros2
-            {'udp_port': 15783},         # UDP port to communicate on (match transponder)
-            {'max_age':  1.0},           # Max age of packets, otherwise reject [ s ]
-            {'timeout': 10.0},           # Time before notifying of no packets [ s ]
+            {'transponder_ip': '10.42.8.60'},  # IP address of the transponder
+            {'udp_port': 15783},              # UDP port to communicate on (match transponder)
+            {'max_age':  1.0},                # Max age of packets, otherwise reject [ s ]
+            {'timeout': 10.0},                # Time before notifying of no packets [ s ]
         ],
     )
     ld.add_action(node)
@@ -39,7 +39,7 @@ def generate_launch_description():
         parameters=[
                 {'odometry_in' : '/state/odom'},    # Odometry in topic
                 {'transponder_out' : 'out'},        # Transponder out topic
-                {'car_id' : 1},                     # Car ID
+                {'car' : 1},                        # Car ID
                 {'lat0' : 45.61898},   # Monza      # Reference lla
                 {'lon0' : 9.2811880},
                 {'alt0' : 176.61984507},
