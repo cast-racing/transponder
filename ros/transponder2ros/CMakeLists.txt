@@ -16,6 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(transponder_msgs REQUIRED)
 find_package(GeographicLib REQUIRED)
 
@@ -54,6 +55,20 @@ add_executable(transponder2ros_node src/transponder2ros_node.cpp
     )
     install(TARGETS
       transponder2ros_node
+        DESTINATION lib/${PROJECT_NAME}
+    )
+
+add_executable(transponder2NavSatFix_node src/transponder2NavSatFix_node.cpp
+    src/transponder2NavSatFix_node.cpp
+    )
+    ament_target_dependencies(transponder2NavSatFix_node 
+        rclcpp
+        std_msgs
+        sensor_msgs
+        transponder_msgs
+    )
+    install(TARGETS
+        transponder2NavSatFix_node
         DESTINATION lib/${PROJECT_NAME}
     )
 
