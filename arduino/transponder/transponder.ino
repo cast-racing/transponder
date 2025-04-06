@@ -20,6 +20,7 @@ IPAddress subnet("255.255.255.0");
 IPAddress dns("8.8.8.8");
 
 static bool eth_connected = false;
+double utc_last_udp_ = 0.0;
 
 char buf_[100];   // Buffer for printing strings
 
@@ -102,6 +103,7 @@ void loop()
 {
   process_udp();
   process_xbee();
+  process_debug();  // Code for sending debug packets
 }
 
 void process_udp()
@@ -143,6 +145,9 @@ void process_udp()
 
         // Forward packet out via Serial1
         Serial1.write((uint8_t*)xbee_packet.raw, SIZEOF_XbeePacket);
+
+        // Store the last UTC time a packet was received
+        utc_last_udp_ = xbee_packet.data.data.data.utc;
     }
     else
     {
@@ -173,6 +178,18 @@ void process_xbee()
 
   }
 
+}
+
+void process_debug()
+{
+  // Send debug data
+  static unsigned long t_last = millis();
+
+  if (millis() > t_last + 100)
+  {
+    send_test_udp();
+    t_last = millis();
+  } 
 }
 
 void xbee_state_machine(char x)
@@ -267,6 +284,28 @@ void xbee_state_machine(char x)
       }
       break;
   }
+}
+
+void send_test_udp()
+{
+
+  static TransponderUdpPacket test_data;
+
+  // Fill the packet with some random stuff
+  test_data.data.version = TRANSPONDER_UDP_STRUCT_VERISON;
+  test_data.data.utc = utc_last_udp_;
+  test_data.data.car_id = 1;
+
+  test_data.data.lat =   36.268080 + random(-1e3, 1e3)/1e7;
+  test_data.data.lon = -115.018186 + random(-1e3, 1e3)/1e7;
+  test_data.data.vel = random(0,100)/10.0;
+  test_data.data.state = 3;
+
+  // Send the packet
+  udp.beginPacket(ip_send_, port_);
+  udp.write((uint8_t*)test_data.raw, SIZEOF_TransponderUdpPacket);
+  udp.endPacket();
+
 }
 
 uint8_t calc_crc8(const char* data, size_t len)
