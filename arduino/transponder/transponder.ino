@@ -103,7 +103,7 @@ void loop()
 {
   process_udp();
   process_xbee();
-  process_debug();  // Code for sending debug packets
+  // process_debug();  // Code for sending debug packets
 }
 
 void process_udp()
