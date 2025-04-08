@@ -7,10 +7,10 @@
 #include "xbee_struct.h"
 
 // IP settings
-// IPAddress local_IP(192, 168, 1, 100);      // IP Address of the Transponder
+// IPAddress local_IP(192, 168, 1, 100);   // IP Address of the Transponder
 IPAddress local_IP("10.42.8.60");          // IP Address of the Transponder
-IPAddress ip_send_("10.42.8.200");         // Destination IP for UDP messages (ROS2 computer)
-const unsigned int port_ = 15783;          // UDP port
+IPAddress ip_send_("10.42.8.4");           // Destination IP for UDP messages (ROS2 computer)
+const unsigned int port_ = 15783;          // UDP port  15783
 
 // Globals
 WiFiUDP udp;
@@ -101,9 +101,11 @@ void setup()
 
 void loop()
 {
+
   process_udp();
   process_xbee();
   // process_debug();  // Code for sending debug packets
+
 }
 
 void process_udp()
@@ -190,6 +192,14 @@ void process_debug()
     send_test_udp();
     t_last = millis();
   } 
+
+  if (0)
+  {
+    udp.beginPacket(ip_send_, port_);
+    udp.print("hello");
+    udp.endPacket();
+    delay(50);
+  }
 }
 
 void xbee_state_machine(char x)
