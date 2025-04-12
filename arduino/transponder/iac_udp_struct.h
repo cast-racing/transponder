@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-const uint8_t TRANSPONDER_UDP_STRUCT_VERISON = 0x02;  // 2025-02-21
+const uint8_t TRANSPONDER_UDP_STRUCT_VERISON = 0x03;  // 2025-04-11
                                                       // Check on the ROS side the versions of the
                                                       // structs you are getting are correct
 
@@ -14,6 +14,7 @@ struct __attribute__((packed)) StructIacTransponder
   uint8_t car_id;                // Car ID [ - ]
   double lat;                    // Vehicle longitude [ dd.dd ]
   double lon;                    // Vehicle latitude [ dd.dd ]
+  float heading;                 // Vehicle GPS heading [ deg ]
   float vel;                     // Vehicle speed [ m/s ]
   uint8_t state;                 // Vehicle state [ - ], see transponder_msgs::msg::Transponder
 };

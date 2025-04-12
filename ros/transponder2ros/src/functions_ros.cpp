@@ -44,6 +44,7 @@ void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transpon
     transponder.car_id = msg->car_id;                       // Car ID [ - ]
     transponder.lat = msg->lat;                             // Vehicle longitude [ dd.dd ]
     transponder.lon = msg->lon;                             // Vehicle latitude [ dd.dd ]
+    transponder.heading = msg->heading;                     // Vehicle GPS heading [ deg ]
     transponder.vel = msg->vel;                             // Vehicle speed [ m/s ]
     transponder.state = msg->state;                         // Vehicle state [ - ]
   

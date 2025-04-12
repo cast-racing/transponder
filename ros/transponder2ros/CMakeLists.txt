@@ -16,6 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(transponder_msgs REQUIRED)
 find_package(GeographicLib REQUIRED)
@@ -91,6 +92,7 @@ add_executable(odom2transponder_node src/odom2transponder_node.cpp)
         nav_msgs
         geographic_msgs
         transponder_msgs
+        geometry_msgs
         GeographicLib
         iac_msgs
     )
