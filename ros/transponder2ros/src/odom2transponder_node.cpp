@@ -13,8 +13,6 @@
 #include "geographic_msgs/msg/geo_point.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
 #include "transponder_msgs/msg/transponder.hpp"
-#include "iac_msgs/msg/car_mode.hpp"
-
 
 class Odom2Transponder : public rclcpp::Node
 {
@@ -55,6 +53,9 @@ public:
                 this, std::placeholders::_1)
         );
 
+        /*
+        // For those that want to fill in the 'state' field, here's an example of how to do it
+        // Each different team will have different modes, so this is just an example for CAST Racer
         sub_CarMode_ = this->create_subscription<iac_msgs::msg::CarMode>(
             param_carModeIn,
             1,
@@ -62,6 +63,7 @@ public:
                 &Odom2Transponder::callback_CarMode,
                 this, std::placeholders::_1)
         );
+        */
 
         // Timers
         timer_pushTransponder_ = this->create_wall_timer(
@@ -118,6 +120,10 @@ private:
         return;
     }
 
+    /*
+    // For those that want to fill in the 'state' field, here's an example of how to do it
+    // Each different team will have different modes, so this is just an example for CAST Racer
+
     void callback_CarMode(const iac_msgs::msg::CarMode::SharedPtr msg)
     {
         // Save the latest odom data
@@ -147,6 +153,7 @@ private:
         // Done
         return;
     }
+    */
 
     geographic_msgs::msg::GeoPoint enu_to_lla_geodetic(
         const geometry_msgs::msg::Point enu,
@@ -170,7 +177,7 @@ private:
     // Publishers / Subscribers / Timers
     rclcpp::Publisher<transponder_msgs::msg::Transponder>::SharedPtr pub_Transponder_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_Odometry_;
-    rclcpp::Subscription<iac_msgs::msg::CarMode>::SharedPtr sub_CarMode_;
+    // rclcpp::Subscription<iac_msgs::msg::CarMode>::SharedPtr sub_CarMode_;  // Needed to fill in the 'state' field
     rclcpp::TimerBase::SharedPtr timer_pushTransponder_;
 
     // Variables

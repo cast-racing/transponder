@@ -20,7 +20,6 @@ find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(transponder_msgs REQUIRED)
 find_package(GeographicLib REQUIRED)
-find_package(iac_msgs REQUIRED)
 
 # git hash and branch
 execute_process(
@@ -94,7 +93,6 @@ add_executable(odom2transponder_node src/odom2transponder_node.cpp)
         transponder_msgs
         geometry_msgs
         GeographicLib
-        iac_msgs
     )
     install(TARGETS
     odom2transponder_node
