@@ -132,6 +132,7 @@ void process_udp()
       sprintf(buf_, "        Car: %d\n"    ,xbee_packet.data.data.data.car_id); Serial.print(buf_);
       sprintf(buf_, "        Lat: %11.5f\n",xbee_packet.data.data.data.lat); Serial.print(buf_);
       sprintf(buf_, "        Lon: %11.5f\n",xbee_packet.data.data.data.lon); Serial.print(buf_);
+      sprintf(buf_, "    Heading: %5.2f\n" ,xbee_packet.data.data.data.heading); Serial.print(buf_);
       sprintf(buf_, "        Vel: %5.2f\n" ,xbee_packet.data.data.data.vel); Serial.print(buf_);
       sprintf(buf_, "      State: %d\n"    ,xbee_packet.data.data.data.state); Serial.print(buf_);
     }
@@ -277,6 +278,7 @@ void xbee_state_machine(char x)
             sprintf(buf_, "        Car: %d\n"    ,data.data.car_id); Serial.print(buf_);
             sprintf(buf_, "        Lat: %11.5f\n",data.data.lat); Serial.print(buf_);
             sprintf(buf_, "        Lon: %11.5f\n",data.data.lon); Serial.print(buf_);
+            sprintf(buf_, "    Heading: %5.2f\n" ,data.data.heading); Serial.print(buf_);
             sprintf(buf_, "        Vel: %5.2f\n" ,data.data.vel); Serial.print(buf_);
             sprintf(buf_, "      State: %d\n"    ,data.data.state); Serial.print(buf_);
             Serial.print("\n");
@@ -308,6 +310,7 @@ void send_test_udp()
 
   test_data.data.lat =   36.268080 + random(-1e3, 1e3)/1e7;
   test_data.data.lon = -115.018186 + random(-1e3, 1e3)/1e7;
+  test_data.data.heading = random(0,360)/1.0;
   test_data.data.vel = random(0,100)/10.0;
   test_data.data.state = 3;
 

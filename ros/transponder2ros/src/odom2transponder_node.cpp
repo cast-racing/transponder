@@ -11,9 +11,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "geographic_msgs/msg/geo_point.hpp"
+#include "geometry_msgs/msg/quaternion.hpp"
 #include "transponder_msgs/msg/transponder.hpp"
-#include "iac_msgs/msg/car_mode.hpp"
-
 
 class Odom2Transponder : public rclcpp::Node
 {
@@ -54,6 +53,9 @@ public:
                 this, std::placeholders::_1)
         );
 
+        /*
+        // For those that want to fill in the 'state' field, here's an example of how to do it
+        // Each different team will have different modes, so this is just an example for CAST Racer
         sub_CarMode_ = this->create_subscription<iac_msgs::msg::CarMode>(
             param_carModeIn,
             1,
@@ -61,6 +63,7 @@ public:
                 &Odom2Transponder::callback_CarMode,
                 this, std::placeholders::_1)
         );
+        */
 
         // Timers
         timer_pushTransponder_ = this->create_wall_timer(
@@ -83,6 +86,14 @@ private:
         // Convert enu to lla
         geographic_msgs::msg::GeoPoint lla = enu_to_lla_geodetic(odom_.pose.pose.position, lla0_);
 
+        // Calculate yaw
+        geometry_msgs::msg::Quaternion q = odom_.pose.pose.orientation;
+        double siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
+        double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
+        double yaw = std::atan2(siny_cosp, cosy_cosp);
+        double yaw_deg = (M_PI_2-yaw)*180.0/M_PI;
+        while (yaw_deg < 0.0) yaw_deg += 360.0;
+
         // Push message
         transponder_msgs::msg::Transponder msg;
 
@@ -92,6 +103,7 @@ private:
         msg.car_id = car_id_;
         msg.lat = lla.latitude;
         msg.lon = lla.longitude;
+        msg.heading = yaw_deg;
         msg.vel = odom_.twist.twist.linear.x;
         msg.state = transponder_msgs::msg::Transponder::STATE_NOMINAL;
 
@@ -107,6 +119,10 @@ private:
         // Done
         return;
     }
+
+    /*
+    // For those that want to fill in the 'state' field, here's an example of how to do it
+    // Each different team will have different modes, so this is just an example for CAST Racer
 
     void callback_CarMode(const iac_msgs::msg::CarMode::SharedPtr msg)
     {
@@ -137,6 +153,7 @@ private:
         // Done
         return;
     }
+    */
 
     geographic_msgs::msg::GeoPoint enu_to_lla_geodetic(
         const geometry_msgs::msg::Point enu,
@@ -160,7 +177,7 @@ private:
     // Publishers / Subscribers / Timers
     rclcpp::Publisher<transponder_msgs::msg::Transponder>::SharedPtr pub_Transponder_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_Odometry_;
-    rclcpp::Subscription<iac_msgs::msg::CarMode>::SharedPtr sub_CarMode_;
+    // rclcpp::Subscription<iac_msgs::msg::CarMode>::SharedPtr sub_CarMode_;  // Needed to fill in the 'state' field
     rclcpp::TimerBase::SharedPtr timer_pushTransponder_;
 
     // Variables
