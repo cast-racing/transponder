@@ -145,6 +145,7 @@ void transponder2ros::read_udpData()
             msg.car_id = transponder.data.car_id;
             msg.lat = transponder.data.lat;
             msg.lon = transponder.data.lon;
+            msg.heading = transponder.data.heading;
             msg.vel = transponder.data.vel;
             msg.state = transponder.data.state;
 

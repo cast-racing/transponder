@@ -37,6 +37,7 @@ class TransponderDebug : public rclcpp::Node
         msg_.car_id = 8;
         msg_.lat = msg_.lat + 0.1;
         msg_.lon = msg_.lon - 0.1;
+        msg_.heading = msg_.heading + 0.03;
         msg_.vel = msg_.vel + 0.2;
         msg_.state = transponder_msgs::msg::Transponder::STATE_NOMINAL;
 
