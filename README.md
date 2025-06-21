@@ -36,12 +36,25 @@ The node then publishes the data out as a `transponder_msgs::msg::Transponder` o
     - https://www.digikey.com/en/products/detail/te-connectivity-linx/ANT-2-4-LCW-RPS/9607800
   - Antenna (large)
     - https://www.digikey.com/en/products/detail/taoglas-limited/FW-24-SMA-M/7035228
+- Extension Cables (should be correct)
+  - 250 mm (9.8") RP-SMA to RP-SMA
+    - https://www.digikey.com/en/products/detail/sparkfun-electronics/22037/21443079
+  - 1 m (3'3") RP-SMA to RP-SMA
+    - https://www.digikey.com/en/products/detail/sparkfun-electronics/22036/21443073
 
 ## Component Setup
+### ROS2 Node
+To fill in with a better example, but the general idea is
+- `ros/transponder2ros/src/odom2transponder_node.cpp` converts odom messages into `transponder_msgs`
+- `ros/transponder2ros/src/transponder2ros.cpp` broadcasts and receives the `transponder_msgs`
+It should be mostly plug and play if you update `ros/transponder2ros/launch/transponder.launch.py` correctly
+
 ### ESP32-PoE-ISO
 Software can be flashed using Arduino
-1. Change the network settings in `arduino/transponder/transponder.ino` to match your network
-1. Upload as `OLIMEX ESP32-POE-ISO` board type.  Requires the [Arduino-ESP32 package](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html). 
+- Change the network settings in `arduino/transponder/transponder.ino` to match your network
+  - `local_IP` is the address of the transponder (same subnet as the PoE switch)
+  - `ip_send_` should be the IP address of the PoE switch 
+- Upload as `OLIMEX ESP32-POE-ISO` board type.  Requires the [Arduino-ESP32 package](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html). 
 
 ### XBee
 1. Download XCTU, and apply the profile in `xbee/iac_default.pro`.
