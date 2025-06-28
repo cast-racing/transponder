@@ -6,16 +6,23 @@
 #include "iac_udp_struct.h"
 #include "xbee_struct.h"
 
+// Team Defines (comment / uncomment as required)
+
+#define TRANSPONDER_IP "10.42.7.61"  // #7 (Berkeley (to update))
+#define COMPUTER_IP "10.42.7.4"
+
+// #define TRANSPONDER_IP "10.42.8.60"  // #8 (Caltech Racer)
+// #define COMPUTER_IP "10.42.8.4"
+
 // IP settings
-// IPAddress local_IP(192, 168, 1, 100);   // IP Address of the Transponder
-IPAddress local_IP("10.42.8.60");          // IP Address of the Transponder
-IPAddress ip_send_("10.42.8.4");           // Destination IP for UDP messages (ROS2 computer)
+IPAddress local_IP(TRANSPONDER_IP);        // IP Address of the Transponder
+IPAddress ip_send_(COMPUTER_IP);           // Destination IP for UDP messages (ROS2 computer)
 const unsigned int port_ = 15783;          // UDP port  15783
 
 // Globals
 WiFiUDP udp;
 
-IPAddress gateway("10.42.8.200");
+IPAddress gateway(COMPUTER_IP);
 IPAddress subnet("255.255.255.0");
 IPAddress dns("8.8.8.8");
 
@@ -45,15 +52,17 @@ void WiFiEvent(WiFiEvent_t event)
     case ARDUINO_EVENT_ETH_GOT_IP:
     // This will happen when we obtain an IP address through DHCP:
       Serial.print("Got an IP Address for ETH MAC: ");
-      Serial.print(ETH.macAddress());
-      Serial.print(", IPv4: ");
-      Serial.print(ETH.localIP());
+      Serial.println(ETH.macAddress());
+      Serial.print("  IPv4: ");
+      Serial.println(ETH.localIP());
       if (ETH.fullDuplex()) {
-        Serial.print(", FULL_DUPLEX");
+        Serial.print(" FULL_DUPLEX");
       }
-      Serial.print(", ");
+      Serial.print("  ");
       Serial.print(ETH.linkSpeed());
       Serial.println("Mbps");
+      Serial.print("Sending data to ");
+      Serial.println(ip_send_);
       eth_connected = true;
       break;
 
@@ -80,10 +89,17 @@ void setup()
   // Wait for the hardware to initialize:
   delay(500);
 
-  // This sketch will log some information to the serial console:
-  Serial.begin(115200); // Assuming computer will be connected to serial port at 115200 bauds
+  // Start debugging serial port
+  Serial.begin(115200);
+  
+  Serial.println("=====================");
+  Serial.println("IAC Transponder System");
+  Serial.println("TRANSPONDER_IP: "+String(TRANSPONDER_IP)+", COMPUTER_IP: "+String(COMPUTER_IP));
+  Serial.println("  Transponder Struct Version: "+String(TRANSPONDER_UDP_STRUCT_VERISON)+", len(XBee Packet): "+String(SIZEOF_XbeePacket)+" bytes");
+  Serial.println("=====================");
   Serial.print("Setup...");
 
+  // Start Xbee serial port
   Serial1.begin(57600);
   
   // Add a handler for network events. This is misnamed "WiFi" because the ESP32 is historically WiFi only,

@@ -1,16 +1,15 @@
 #!/bin/bash
-# Uses arduino-cli : `curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh`
-#        Move the file `bin/arduino-cli` to `/usr/bin`
-# Install board support : `arduino-cli core update-index && arduino-cli config set network.connection_timeout 600s && arduino-cli core install esp32:esp32`
-
-# `arduino-cli board search olimex`
-
 set -e
 
-echo "Compiling code"
-arduino-cli compile --fqbn esp32:esp32:esp32-poe-iso transponder/ 
+echo "Compiling code, please wait"
+arduino-cli compile \
+  --fqbn esp32:esp32:esp32-poe-iso \
+  transponder/
 
 echo "Uploading"
-arduino-cli upload -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32-poe-iso transponder/
+arduino-cli upload \
+  -p /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0 \
+  --fqbn esp32:esp32:esp32-poe-iso \
+  transponder/
 
 echo "Done"
