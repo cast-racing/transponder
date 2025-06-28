@@ -1,7 +1,7 @@
 #!/bin/bash
 # Uses arduino-cli : `curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh`
 #        Move the file `bin/arduino-cli` to `/usr/bin`
-# Install board support : `arduino-cli core update-index && arduino-cli core install esp32:esp32`
+# Install board support : `arduino-cli core update-index && arduino-cli config set network.connection_timeout 600s && arduino-cli core install esp32:esp32`
 
 # `arduino-cli board search olimex`
 
