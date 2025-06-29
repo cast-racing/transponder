@@ -46,10 +46,10 @@ Finally, make sure to hotglue down the wires to help load alleviate the solder j
 
 ## Assembly
 The attached STL (Solidworks files included) can be 3D printed to give a mount that can be used to join the parts together.
-- Three [M2x4 socket head cap screws](https://www.mcmaster.com/91292A004/) are used for mounting the ESP32-PoE-ISO to the board.
+- Three [M2x6 socket head cap screws](https://www.mcmaster.com/91292a831/) are used for mounting the ESP32-PoE-ISO to the board.
   - You could probably also use double-sided tape and a cable tie, but things might get a little warm.
 - Double-sided tape is used to mount the XBee to the board
   - Hold the XBee to the board by wrapping tape around.
-- Clear up your cables.
+- Clean up your cables.
   - A 0.75" x 0.75" cable tie mount works well
   - Don't pull the cables too tightly
