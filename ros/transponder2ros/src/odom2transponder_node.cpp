@@ -67,7 +67,7 @@ public:
 
         // Timers
         timer_pushTransponder_ = this->create_wall_timer(
-            std::chrono::milliseconds(100),
+            std::chrono::milliseconds(100),  // Kept at a reasonably rate to not flood the network
             std::bind(&Odom2Transponder::callback_pushTransponder, this));
     }
 

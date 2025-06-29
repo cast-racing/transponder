@@ -27,7 +27,8 @@ IPAddress subnet("255.255.255.0");
 IPAddress dns("8.8.8.8");
 
 static bool eth_connected = false;
-double utc_last_udp_ = 0.0;
+int32_t last_udp_sec_ = 0;
+uint32_t last_udp_nanosec_ = 0;
 
 char buf_[100];   // Buffer for printing strings
 
@@ -144,7 +145,8 @@ void process_udp()
     {
       Serial.print("\nReceived from UDP / send XBee\n");
       sprintf(buf_, "    Version: %d\n"    ,xbee_packet.data.data.data.version); Serial.print(buf_);
-      sprintf(buf_, "       Time: %8.2f\n" ,xbee_packet.data.data.data.utc); Serial.print(buf_);
+      sprintf(buf_, "        sec: %d\n"    ,xbee_packet.data.data.data.sec); Serial.print(buf_);
+      sprintf(buf_, "    nanosec: %d\n"    ,xbee_packet.data.data.data.nanosec); Serial.print(buf_);
       sprintf(buf_, "        Car: %d\n"    ,xbee_packet.data.data.data.car_id); Serial.print(buf_);
       sprintf(buf_, "        Lat: %11.5f\n",xbee_packet.data.data.data.lat/1e7); Serial.print(buf_);
       sprintf(buf_, "        Lon: %11.5f\n",xbee_packet.data.data.data.lon/1e7); Serial.print(buf_);
@@ -167,7 +169,8 @@ void process_udp()
         Serial1.write((uint8_t*)xbee_packet.raw, SIZEOF_XbeePacket);
 
         // Store the last UTC time a packet was received
-        utc_last_udp_ = xbee_packet.data.data.data.utc;
+        last_udp_sec_ = xbee_packet.data.data.data.sec;
+        last_udp_nanosec_ = xbee_packet.data.data.data.nanosec;
     }
     else
     {
@@ -291,11 +294,12 @@ void xbee_state_machine(char x)
           {
             Serial.print("\nReceived from XBee / Send UDP\n");
             sprintf(buf_, "    Version: %d\n"    ,data.data.version); Serial.print(buf_);
-            sprintf(buf_, "       Time: %8.2f\n" ,data.data.utc); Serial.print(buf_);
+            sprintf(buf_, "        sec: %d\n"    ,data.data.sec); Serial.print(buf_);
+            sprintf(buf_, "    nanosec: %d\n"    ,data.data.nanosec); Serial.print(buf_);
             sprintf(buf_, "        Car: %d\n"    ,data.data.car_id); Serial.print(buf_);
             sprintf(buf_, "        Lat: %13.8f\n",data.data.lat/1e7); Serial.print(buf_);
             sprintf(buf_, "        Lon: %13.8f\n",data.data.lon/1e7); Serial.print(buf_);
-            sprintf(buf_, "        Alt: %8.3f\n",data.data.alt/1e3); Serial.print(buf_);
+            sprintf(buf_, "        Alt: %8.3f\n" ,data.data.alt/1e3); Serial.print(buf_);
             sprintf(buf_, "    Heading: %5.2f\n" ,data.data.heading/1e2); Serial.print(buf_);
             sprintf(buf_, "        Vel: %5.2f\n" ,data.data.vel/1e2); Serial.print(buf_);
             sprintf(buf_, "      State: %d\n"    ,data.data.state); Serial.print(buf_);
@@ -324,7 +328,8 @@ void send_test_udp()
 
   // Fill the packet with some random stuff
   test_data.data.version = TRANSPONDER_UDP_STRUCT_VERISON;
-  test_data.data.utc = utc_last_udp_;
+  test_data.data.sec = last_udp_sec_;
+  test_data.data.nanosec = last_udp_nanosec_;
   test_data.data.car_id = 1;
 
   test_data.data.lat =   362680800 + random(-10, 10);

@@ -10,10 +10,14 @@ const uint8_t TRANSPONDER_UDP_STRUCT_VERISON = 0x04;  // 2025-06-28
                                                       // Check on the ROS side the versions of the
                                                       // structs you are getting are correct
 
+const char xbee_headerA_ = '$';
+const char xbee_headerB_ = 'S';
+
 struct __attribute__((packed)) StructIacTransponder
 {
   uint8_t version;               // Struct version
-  double utc;                    // UTC time [ s ]
+  int32_t sec;                   // UTC time seconds [ s ]
+  uint32_t nanosec;              // UTC time nanoseconds [ ns ]
   uint8_t car_id;                // Car ID [ - ]
   int32_t lat;                   // Vehicle longitude [ dd.dd x 10^7 ]
   int32_t lon;                   // Vehicle latitude [ dd.dd x 10^7 ]

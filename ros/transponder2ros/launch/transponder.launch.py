@@ -13,7 +13,7 @@ def generate_launch_description():
         package='transponder2ros',
         executable='transponder2ros_node',
         name='transponder_node',
-        output='screen',
+        output='both',
         namespace='transponder',
         parameters=[
             # ROS network
@@ -25,6 +25,8 @@ def generate_launch_description():
             {'udp_port': 15783},              # UDP port to communicate on (match transponder)
             {'max_age':  1.0},                # Max age of packets, otherwise reject [ s ]
             {'timeout': 10.0},                # Time before notifying of no packets [ s ]
+            # Serial network (direct xbee connection for debugging)
+            {'device_id': ''},                # Device ID of the XBee (leave blank to disable)
         ],
     )
     ld.add_action(node)
@@ -34,7 +36,7 @@ def generate_launch_description():
         package="transponder2ros",
         executable="odom2transponder_node",
         name="odom2trans",
-        output="screen",
+        output="both",
         namespace="transponder",
         parameters=[
                 {'odometry_in' : '/state/odom'},    # Odometry in topic
