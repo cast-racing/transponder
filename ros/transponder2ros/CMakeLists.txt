@@ -45,9 +45,10 @@ include_directories(
 
 # Add executables
 add_executable(transponder2ros_node src/transponder2ros_node.cpp
-    src/functions_ros.cpp
-    src/functions_udp.cpp
-    src/transponder2ros.cpp
+    src/transponder2ros/functions_ros.cpp
+    src/transponder2ros/functions_serial.cpp
+    src/transponder2ros/functions_udp.cpp
+    src/transponder2ros/transponder2ros.cpp
     )
     ament_target_dependencies(transponder2ros_node 
         rclcpp

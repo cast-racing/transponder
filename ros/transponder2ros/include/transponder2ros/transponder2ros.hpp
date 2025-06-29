@@ -16,6 +16,14 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include <termio.h>
+#include <stdio.h>
+#include <iomanip>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string>
+#include <glob.h>
+
 #include "std_msgs/msg/string.hpp"
 #include "transponder_msgs/msg/transponder.hpp"
 
@@ -36,6 +44,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_Version_;
 
     rclcpp::TimerBase::SharedPtr timer_1Hz_, timer_10s_;
+    rclcpp::TimerBase::SharedPtr timer_readSerial_;
 
     // Threads
     std::thread receive_data_thread_;
@@ -54,18 +63,28 @@ private:
     bool has_timeout_ = false;
 
     int sockfd_ = socket(AF_INET,SOCK_DGRAM,0);
+    int m_serialPort_ = 0;
 
     std::mutex lock_;
+
+    bool debug_RawData_ = 0;
 
     // Functions
     void init_udp();
     void init_ros();
+    void init_serial();
 
     void push_udp(StructIacTransponder data);
     void read_udpData();
 
+    bool open_serial(int &p_serialPort, std::string device_path);
+    void read_serialData();
+    bool parseChar(unsigned char x);
+    uint8_t calc_crc8(const char* data, size_t len);
+
     void callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg);
-    
+    void publish_Transponder(TransponderUdpPacket transponder);
+
     void callback_1Hz();
     void callback_10s();
   

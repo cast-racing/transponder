@@ -74,14 +74,14 @@ void transponder2ros::push_udp(StructIacTransponder data)
 
     if (sent_bytes < 0)
     {
-        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 1UL * 1000 * 1000, "Failed to send telop UDP packet");
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 1UL * 1000 * 1000, "Failed to send transponder UDP packet");
     }
     else
     {
         if (0)
         {
             RCLCPP_INFO(this->get_logger(), "Sent %ld bytes", sent_bytes);
-            RCLCPP_INFO(this->get_logger(), "Time %f", udp_packet.data.utc);
+            RCLCPP_INFO(this->get_logger(), "Time %d", udp_packet.data.nanosec);
         }
     }
 
@@ -113,61 +113,8 @@ void transponder2ros::read_udpData()
 
             std::memcpy(&transponder.data, &buffer_, SIZEOF_TransponderUdpPacket);
 
-            // Reject if the versions don't match
-            if (transponder.data.version != TRANSPONDER_UDP_STRUCT_VERISON)
-            {
-                RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
-                    "Version mismatch | car: %d, ours: 0x%02X, theirs: 0x%02X",
-                    transponder.data.car_id, TRANSPONDER_UDP_STRUCT_VERISON, transponder.data.version
-                );
-            }
-
-            // Reject if message is too old
-            double msg_tDiff = this->get_clock()->now().seconds() - transponder.data.utc;
-
-            // RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 5000, "Latency: %.3f s", msg_tDiff);
-
-            if (abs(msg_tDiff) > t_Udp_timeout_)
-            {
-                RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
-                                        "Transponder UPD packet late by %.3f s", msg_tDiff);
-                continue;
-            }
-
-            // Publish the data
-            transponder_msgs::msg::Transponder msg;
-
-            msg.header.stamp.sec = static_cast<int32_t>(transponder.data.utc);
-            msg.header.stamp.nanosec = static_cast<uint32_t>((transponder.data.utc - msg.header.stamp.sec) * 1e9);;
-
-            msg.header.frame_id = "map";
-
-            msg.car_id = transponder.data.car_id;
-            msg.lat = transponder.data.lat;
-            msg.lon = transponder.data.lon;
-            msg.heading = transponder.data.heading;
-            msg.vel = transponder.data.vel;
-            msg.state = transponder.data.state;
-
-            pub_Transponder_->publish(msg);
-
-            // Update our last received time
-            t_last_packet_ = this->get_clock()->now();
-
-            // Update user if reconnected
-            if (has_timeout_)
-            {
-                RCLCPP_INFO(this->get_logger(), "Transponder connected");
-                has_timeout_ = false;
-            }
-
-            // Debugging
-            if (0)
-            {
-                RCLCPP_INFO(this->get_logger(), "lat: %8.3f, lon: %8.3f",
-                    transponder.data.lat, transponder.data.lon
-                );
-            }
+            // Publish transponder packet
+            publish_Transponder(transponder);
 
         }
     }

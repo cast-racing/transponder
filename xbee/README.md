@@ -1,6 +1,6 @@
-# XBee 
+# XBee
 
-
+The XBee is used to communicate between the nodes.
 
 ## Configuration
 - Download XCTU from

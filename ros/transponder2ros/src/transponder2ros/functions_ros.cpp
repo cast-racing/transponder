@@ -32,20 +32,85 @@ void transponder2ros::init_ros()
 
 }
 
+void transponder2ros::publish_Transponder(TransponderUdpPacket transponder)
+{
+
+    // Reject if the versions don't match
+    if (transponder.data.version != TRANSPONDER_UDP_STRUCT_VERISON)
+    {
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000,
+            "Version mismatch | car: %d, ours: 0x%02X, theirs: 0x%02X",
+            transponder.data.car_id, TRANSPONDER_UDP_STRUCT_VERISON, transponder.data.version
+        );
+    }
+
+    // Reject if message is too old
+    rclcpp::Time t_data(transponder.data.sec, transponder.data.nanosec, this->get_clock()->get_clock_type());
+    rclcpp::Duration msg_tDiff = this->get_clock()->now() - t_data;
+
+    // RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 5000, "Latency: %.3f s", msg_tDiff);
+
+    if (std::abs(msg_tDiff.seconds()) > t_Udp_maxAge_)
+    {
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
+                                "Transponder UDP packet late by %.3f s", msg_tDiff);
+        return;
+    }
+
+    // Publish the data
+    transponder_msgs::msg::Transponder msg;
+
+    msg.header.stamp.sec = transponder.data.sec;
+    msg.header.stamp.nanosec = transponder.data.nanosec;
+    msg.header.frame_id = "map";
+
+    msg.car_id = transponder.data.car_id;
+    msg.lat = transponder.data.lat/1e7;
+    msg.lon = transponder.data.lon/1e7;
+    msg.alt = transponder.data.alt/1e3;
+    msg.heading = transponder.data.heading/1e2;
+    msg.vel = transponder.data.vel/1e2;
+    msg.state = transponder.data.state;
+
+    pub_Transponder_->publish(msg);
+
+    // Update our last received time
+    t_last_packet_ = this->get_clock()->now();
+
+    // Update user if reconnected
+    if (has_timeout_)
+    {
+        RCLCPP_INFO(this->get_logger(), "Transponder connected");
+        has_timeout_ = false;
+    }
+
+    // Debugging
+    if (0)
+    {
+        RCLCPP_INFO(this->get_logger(), "lat: %8.3f, lon: %8.3f",
+            transponder.data.lat, transponder.data.lon
+        );
+    }
+
+    // Done
+    return;
+
+}
+
 void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg)
 {
     // Need to send Transponder data from here
     StructIacTransponder transponder;
 
-    rclcpp::Time utc(msg->header.stamp);
-
     transponder.version = TRANSPONDER_UDP_STRUCT_VERISON;   // Struct version
-    transponder.utc = utc.seconds();                        // UTC time [ s ]
+    transponder.sec = msg->header.stamp.sec;                // UTC time [ s ]
+    transponder.nanosec = msg->header.stamp.nanosec;        // UTC time nanoseconds [ ns ]
     transponder.car_id = msg->car_id;                       // Car ID [ - ]
-    transponder.lat = msg->lat;                             // Vehicle longitude [ dd.dd ]
-    transponder.lon = msg->lon;                             // Vehicle latitude [ dd.dd ]
-    transponder.heading = msg->heading;                     // Vehicle GPS heading [ deg ]
-    transponder.vel = msg->vel;                             // Vehicle speed [ m/s ]
+    transponder.lat = msg->lat*1e7;                         // Vehicle longitude [ dd.dd x 10^7 ]
+    transponder.lon = msg->lon*1e7;                         // Vehicle latitude [ dd.dd x 10^7 ]
+    transponder.alt = msg->alt*1e3;                         // Vehicle altitude [ mm ]
+    transponder.heading = msg->heading*1e2;                 // Vehicle GPS heading [ cdeg ]
+    transponder.vel = (msg->vel > 0) ? msg->vel*1e2 : 0;    // Vehicle speed, force positive [ cm/s ]
     transponder.state = msg->state;                         // Vehicle state [ - ]
   
     // Push data
@@ -78,7 +143,7 @@ void transponder2ros::callback_1Hz()
     {
         // Timeout
         RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5UL * 1000 * 1000,
-            "No UDP transponder data for %.1f s", t_since_last_msg.seconds()
+            "No transponder data from other cars in %.1f s", t_since_last_msg.seconds()
         );
     }
     else if (t_since_last_msg.seconds() > 30.0 && notified_timeout_silence == 0)
