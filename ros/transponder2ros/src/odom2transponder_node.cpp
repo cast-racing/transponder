@@ -103,9 +103,10 @@ private:
         msg.car_id = car_id_;
         msg.lat = lla.latitude;
         msg.lon = lla.longitude;
+        msg.alt = lla.altitude;
         msg.heading = yaw_deg;
         msg.vel = odom_.twist.twist.linear.x;
-        msg.state = transponder_msgs::msg::Transponder::STATE_NOMINAL;
+        msg.state = car_mode_; 
 
         pub_Transponder_->publish(msg);
 

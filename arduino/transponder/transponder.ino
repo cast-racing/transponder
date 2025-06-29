@@ -146,10 +146,11 @@ void process_udp()
       sprintf(buf_, "    Version: %d\n"    ,xbee_packet.data.data.data.version); Serial.print(buf_);
       sprintf(buf_, "       Time: %8.2f\n" ,xbee_packet.data.data.data.utc); Serial.print(buf_);
       sprintf(buf_, "        Car: %d\n"    ,xbee_packet.data.data.data.car_id); Serial.print(buf_);
-      sprintf(buf_, "        Lat: %11.5f\n",xbee_packet.data.data.data.lat); Serial.print(buf_);
-      sprintf(buf_, "        Lon: %11.5f\n",xbee_packet.data.data.data.lon); Serial.print(buf_);
-      sprintf(buf_, "    Heading: %5.2f\n" ,xbee_packet.data.data.data.heading); Serial.print(buf_);
-      sprintf(buf_, "        Vel: %5.2f\n" ,xbee_packet.data.data.data.vel); Serial.print(buf_);
+      sprintf(buf_, "        Lat: %11.5f\n",xbee_packet.data.data.data.lat/1e7); Serial.print(buf_);
+      sprintf(buf_, "        Lon: %11.5f\n",xbee_packet.data.data.data.lon/1e7); Serial.print(buf_);
+      sprintf(buf_, "        Alt: %11.5f\n",xbee_packet.data.data.data.alt/1e3); Serial.print(buf_);
+      sprintf(buf_, "    Heading: %5.2f\n" ,xbee_packet.data.data.data.heading/1e2); Serial.print(buf_);
+      sprintf(buf_, "        Vel: %5.2f\n" ,xbee_packet.data.data.data.vel/1e2); Serial.print(buf_);
       sprintf(buf_, "      State: %d\n"    ,xbee_packet.data.data.data.state); Serial.print(buf_);
     }
 
@@ -292,10 +293,11 @@ void xbee_state_machine(char x)
             sprintf(buf_, "    Version: %d\n"    ,data.data.version); Serial.print(buf_);
             sprintf(buf_, "       Time: %8.2f\n" ,data.data.utc); Serial.print(buf_);
             sprintf(buf_, "        Car: %d\n"    ,data.data.car_id); Serial.print(buf_);
-            sprintf(buf_, "        Lat: %11.5f\n",data.data.lat); Serial.print(buf_);
-            sprintf(buf_, "        Lon: %11.5f\n",data.data.lon); Serial.print(buf_);
-            sprintf(buf_, "    Heading: %5.2f\n" ,data.data.heading); Serial.print(buf_);
-            sprintf(buf_, "        Vel: %5.2f\n" ,data.data.vel); Serial.print(buf_);
+            sprintf(buf_, "        Lat: %13.8f\n",data.data.lat/1e7); Serial.print(buf_);
+            sprintf(buf_, "        Lon: %13.8f\n",data.data.lon/1e7); Serial.print(buf_);
+            sprintf(buf_, "        Alt: %8.3f\n",data.data.alt/1e3); Serial.print(buf_);
+            sprintf(buf_, "    Heading: %5.2f\n" ,data.data.heading/1e2); Serial.print(buf_);
+            sprintf(buf_, "        Vel: %5.2f\n" ,data.data.vel/1e2); Serial.print(buf_);
             sprintf(buf_, "      State: %d\n"    ,data.data.state); Serial.print(buf_);
             Serial.print("\n");
           }
@@ -304,6 +306,7 @@ void xbee_state_machine(char x)
         {
           sprintf(buf_, "Checksum error.  Expected 0x%02X, got 0x%02X\n",crc8,x);
           Serial.print(buf_);
+          Serial.println("  If this happens every frame, check the packet versions match");
         }
 
         // Reset state machine
@@ -324,10 +327,11 @@ void send_test_udp()
   test_data.data.utc = utc_last_udp_;
   test_data.data.car_id = 1;
 
-  test_data.data.lat =   36.268080 + random(-1e3, 1e3)/1e7;
-  test_data.data.lon = -115.018186 + random(-1e3, 1e3)/1e7;
-  test_data.data.heading = random(0,360)/1.0;
-  test_data.data.vel = random(0,100)/10.0;
+  test_data.data.lat =   362680800 + random(-10, 10);
+  test_data.data.lon = -1150181860 + random(-10, 10);
+  test_data.data.alt =  142000*1e3 + random(-100, 100);
+  test_data.data.heading = random(0,36000);
+  test_data.data.vel = random(0,10000);
   test_data.data.state = 3;
 
   // Send the packet

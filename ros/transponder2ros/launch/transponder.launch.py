@@ -45,9 +45,9 @@ def generate_launch_description():
                 {'alt0' : 176.61984507},
         ],
     )
-    # ld.add_action(node)
+    ld.add_action(node)
 
-    # Data faker node (for debugging)
+    # Data faker node (for debugging, commented out)
     node = Node(
         package='transponder2ros',
         executable='debug_node',

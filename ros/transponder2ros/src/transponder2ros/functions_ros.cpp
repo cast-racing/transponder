@@ -42,10 +42,11 @@ void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transpon
     transponder.version = TRANSPONDER_UDP_STRUCT_VERISON;   // Struct version
     transponder.utc = utc.seconds();                        // UTC time [ s ]
     transponder.car_id = msg->car_id;                       // Car ID [ - ]
-    transponder.lat = msg->lat;                             // Vehicle longitude [ dd.dd ]
-    transponder.lon = msg->lon;                             // Vehicle latitude [ dd.dd ]
-    transponder.heading = msg->heading;                     // Vehicle GPS heading [ deg ]
-    transponder.vel = msg->vel;                             // Vehicle speed [ m/s ]
+    transponder.lat = msg->lat*1e7;                         // Vehicle longitude [ dd.dd x 10^7 ]
+    transponder.lon = msg->lon*1e7;                         // Vehicle latitude [ dd.dd x 10^7 ]
+    transponder.alt = msg->alt*1e3;                         // Vehicle altitude [ mm ]
+    transponder.heading = msg->heading*1e2;                 // Vehicle GPS heading [ cdeg ]
+    transponder.vel = msg->vel*1e2;                         // Vehicle speed [ cm/s ]
     transponder.state = msg->state;                         // Vehicle state [ - ]
   
     // Push data
@@ -78,7 +79,7 @@ void transponder2ros::callback_1Hz()
     {
         // Timeout
         RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5UL * 1000 * 1000,
-            "No UDP transponder data for %.1f s", t_since_last_msg.seconds()
+            "No transponder data from other cars in %.1f s", t_since_last_msg.seconds()
         );
     }
     else if (t_since_last_msg.seconds() > 30.0 && notified_timeout_silence == 0)

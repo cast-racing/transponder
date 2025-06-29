@@ -15,6 +15,8 @@ The ESP32-PoE-ISO takes any received packets over the xbee network, checks their
 The node then publishes the data out as a `transponder_msgs::msg::Transponder` onto the ROS2 network.
 
 Each air packet is about 40 bytes long, so the network can handle about `XXXXX, to test in real world conditions` packets/sec between all nodes.
+The data format is designed to look like a GPS packet with some additional information, so make sure to read the comments in the `.msg` file to ensure your data is in the correct units (and scales).
+All data should be referenced from the centre of the rear axle and the time reference is UTC.
 
 ## Installation
 ### ROS2
