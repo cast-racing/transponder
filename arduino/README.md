@@ -3,6 +3,7 @@
 The ESP32-PoE-ISO is programmed using Arduino, and is required to set up the IP addresses.  Flashing should only be required once and then only during message version updates.
 
 ## Installation
+### Linux
 - Download Arduino CLI (or use an existing Arduino install)
   - Follow the instructions at https://arduino.github.io/arduino-cli/1.2/installation/, or,
   - `curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh`
@@ -11,6 +12,20 @@ The ESP32-PoE-ISO is programmed using Arduino, and is required to set up the IP 
   - `arduino-cli core update-index`
   - `arduino-cli config set network.connection_timeout 600s`
   - `arduino-cli core install esp32:esp32`
+
+### Windows
+Windows doesn't support arduino-cli, so there's a little more manual setup requried.
+- Download Arduino IDE from https://www.arduino.cc/en/software
+- Install the ESP32 Core
+  - `Tools > Board > Board Manager` and search for esp32
+  - Install `esp32 by Espressif Systems`
+- Under `Select Board > Select Other Board and Port`
+  -  Boards: `OLIMEX ESP32-POE-ISO`
+  -  Ports: Select the correct port for the Transponder (plugged in via USB)
+-  Modify the code as below, then upload using the arrow in the circle (top left-hand corner near the tick).
+
+You can see the debug messages through the Serial Monitor
+- `Tools > Serial Monitor`
 
 ## Flashing the Firmware
 - Change the network settings in `arduino/transponder/transponder.ino` to match your network
