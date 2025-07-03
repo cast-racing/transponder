@@ -9,6 +9,9 @@ transponder2ros::transponder2ros()
     // Init the UDP connection 
     init_udp();
 
+    // Init a Serial connection
+    init_serial();
+
     // Init ROS
     init_ros();
 

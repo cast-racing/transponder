@@ -67,7 +67,7 @@ public:
 
         // Timers
         timer_pushTransponder_ = this->create_wall_timer(
-            std::chrono::milliseconds(100),
+            std::chrono::milliseconds(100),  // Kept at a reasonably rate to not flood the network
             std::bind(&Odom2Transponder::callback_pushTransponder, this));
     }
 
@@ -103,9 +103,10 @@ private:
         msg.car_id = car_id_;
         msg.lat = lla.latitude;
         msg.lon = lla.longitude;
+        msg.alt = lla.altitude;
         msg.heading = yaw_deg;
         msg.vel = odom_.twist.twist.linear.x;
-        msg.state = transponder_msgs::msg::Transponder::STATE_NOMINAL;
+        msg.state = car_mode_; 
 
         pub_Transponder_->publish(msg);
 

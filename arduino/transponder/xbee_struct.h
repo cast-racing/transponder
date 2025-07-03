@@ -1,9 +1,6 @@
 
 #include <stdint.h>
 
-const char xbee_headerA_ = '$';
-const char xbee_headerB_ = 'S'; 
-
 struct __attribute__((packed)) StructXbee
 {
   char headerA;                 // Header A
