@@ -5,7 +5,8 @@ std_msgs/Header header  # Standard ROS header
 uint8   car_id          # Car ID [ - ]
 float64 lat             # Vehicle longitude, centre of rear axle [ dd.dd ]
 float64 lon             # Vehicle latitude, centre of rear axle [ dd.dd ]
-float32 alt             # Vehicle altitude, centre of rear axle [ m ]
+float32 alt             # Vehicle altitude (ellipsoid), centre of rear axle [ m ]
+                        #     e.g. Laguna Seca Pits LLA: 36.58765756, -121.755279433, 232.011
 float32 heading         # Vehicle heading, GPS style, North = 0, East = 90 [ deg ]
 float32 vel             # Vehicle speed, Vx_body [ m/s ]
 uint8   state           # Vehicle state, see iac_udp_struct.h [ - ]
