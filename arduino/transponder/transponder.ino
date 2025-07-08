@@ -20,6 +20,7 @@ IPAddress ip_send_(COMPUTER_IP);           // Destination IP for UDP messages (R
 const unsigned int port_ = 15783;          // UDP port  15783
 
 // Globals
+const bool print_debug_ = 0;               // Disable debug prints unless actively using
 WiFiUDP udp;
 
 IPAddress gateway(COMPUTER_IP);
@@ -141,7 +142,7 @@ void process_udp()
     int len = udp.read(xbee_packet.data.data.raw, SIZEOF_TransponderUdpPacket);
 
     // Debugging
-    if (1)
+    if (print_debug_)
     {
       Serial.print("\nReceived from UDP / send XBee\n");
       sprintf(buf_, "    Version: %d\n"    ,xbee_packet.data.data.data.version); Serial.print(buf_);
@@ -290,7 +291,7 @@ void xbee_state_machine(char x)
           udp.endPacket();
 
           // Debugging
-          if (1)
+          if (print_debug_)
           {
             Serial.print("\nReceived from XBee / Send UDP\n");
             sprintf(buf_, "    Version: %d\n"    ,data.data.version); Serial.print(buf_);
