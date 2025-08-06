@@ -53,7 +53,7 @@ void transponder2ros::publish_Transponder(TransponderUdpPacket transponder)
     if (std::abs(msg_tDiff.seconds()) > t_Udp_maxAge_)
     {
         RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
-                                "Transponder UDP packet late by %.3f s", msg_tDiff);
+                                "Transponder UDP packet late by %.3f s", msg_tDiff.seconds());
         return;
     }
 
@@ -87,7 +87,7 @@ void transponder2ros::publish_Transponder(TransponderUdpPacket transponder)
     // Debugging
     if (0)
     {
-        RCLCPP_INFO(this->get_logger(), "lat: %8.3f, lon: %8.3f",
+        RCLCPP_INFO(this->get_logger(), "lat: %8.3d, lon: %8.3d",
             transponder.data.lat, transponder.data.lon
         );
     }
