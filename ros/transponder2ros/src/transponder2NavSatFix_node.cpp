@@ -1,5 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
-#include "transponder_msgs/msg/transponder.hpp"
+#include "transponder_msgs/msg/transponder_position.hpp"
 #include "sensor_msgs/msg/nav_sat_fix.hpp"
 
 class Transponder2NavSatFixNode : public rclcpp::Node
@@ -21,7 +21,7 @@ public:
         );
 
         // Subscribers
-        sub_Transponder_ = this->create_subscription<transponder_msgs::msg::Transponder>(
+        sub_Transponder_ = this->create_subscription<transponder_msgs::msg::TransponderPosition>(
             param_transponderIn,
             1,
             std::bind(
@@ -32,7 +32,7 @@ public:
     }
 
 private:
-    void callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg)
+    void callback_Transponder(const transponder_msgs::msg::TransponderPosition::SharedPtr msg)
     {
         sensor_msgs::msg::NavSatFix gps_msg;
         gps_msg.header = msg->header;
@@ -44,7 +44,7 @@ private:
         pub_NavSatFix_->publish(gps_msg);
     }
 
-    rclcpp::Subscription<transponder_msgs::msg::Transponder>::SharedPtr sub_Transponder_;
+    rclcpp::Subscription<transponder_msgs::msg::TransponderPosition>::SharedPtr sub_Transponder_;
     rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr pub_NavSatFix_;
 };
 

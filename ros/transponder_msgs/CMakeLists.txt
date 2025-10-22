@@ -22,7 +22,8 @@ find_package(builtin_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/Transponder.msg"
+  "msg/TransponderPosition.msg"
+  "msg/TransponderCoordination.msg"
   DEPENDENCIES
     builtin_interfaces
     std_msgs

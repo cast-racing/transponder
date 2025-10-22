@@ -12,7 +12,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "geographic_msgs/msg/geo_point.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
-#include "transponder_msgs/msg/transponder.hpp"
+#include "transponder_msgs/msg/transponder_position.hpp"
 
 class Odom2Transponder : public rclcpp::Node
 {
@@ -42,7 +42,7 @@ public:
         car_id_ = this->get_parameter("car").as_int();
 
         // Publishers
-        pub_Transponder_ = this->create_publisher<transponder_msgs::msg::Transponder>(param_transponderOut, 1);
+        pub_Transponder_ = this->create_publisher<transponder_msgs::msg::TransponderPosition>(param_transponderOut, 1);
 
         // Subscribers
         sub_Odometry_ = this->create_subscription<nav_msgs::msg::Odometry>(
@@ -72,6 +72,8 @@ public:
     }
 
 private:
+    uint8_t heartbeat_count_;
+    
     void callback_pushTransponder()
     {
         // Check timestamp is reasonable
@@ -82,6 +84,9 @@ private:
             // RCLCPP_WARN(this->get_logger(), "Odom late by %.1f",t_late_by.seconds());
             return;
         }
+
+        // increment heartbeat counter
+        heartbeat_count_ = static_cast<uint8_t>(heartbeat_count_ + 1);
 
         // Convert enu to lla
         geographic_msgs::msg::GeoPoint lla = enu_to_lla_geodetic(odom_.pose.pose.position, lla0_);
@@ -95,12 +100,13 @@ private:
         while (yaw_deg < 0.0) yaw_deg += 360.0;
 
         // Push message
-        transponder_msgs::msg::Transponder msg;
+        transponder_msgs::msg::TransponderPosition msg;
 
         msg.header.stamp = this->get_clock()->now();
         msg.header.frame_id = "map";
 
         msg.car_id = car_id_;
+        msg.heartbeat = heartbeat_count_;
         msg.lat = lla.latitude;
         msg.lon = lla.longitude;
         msg.alt = lla.altitude;
@@ -132,10 +138,10 @@ private:
         {
             case (iac_msgs::msg::CarMode::TERMINATE) :
             case (iac_msgs::msg::CarMode::EMERGENCY_STOP) :
-                car_mode_ = transponder_msgs::msg::Transponder::STATE_EMERGENCY_STOP;
+                car_mode_ = transponder_msgs::msg::TransponderPosition::STATE_EMERGENCY_STOP;
                 break;
             case (iac_msgs::msg::CarMode::CONTROLLED_STOP) :
-                car_mode_ = transponder_msgs::msg::Transponder::STATE_CONTROLLED_STOP;
+                car_mode_ = transponder_msgs::msg::TransponderPosition::STATE_CONTROLLED_STOP;
                 break;
             case (iac_msgs::msg::CarMode::ENGINE_IDLE) :
             case (iac_msgs::msg::CarMode::PIT) :
@@ -143,11 +149,11 @@ private:
             case (iac_msgs::msg::CarMode::OVERTAKE_ALLOWED) :
             case (iac_msgs::msg::CarMode::DEFENDER) :
             case (iac_msgs::msg::CarMode::RACE) :
-                car_mode_ = transponder_msgs::msg::Transponder::STATE_NOMINAL;
+                car_mode_ = transponder_msgs::msg::TransponderPosition::STATE_NOMINAL;
                 break;
             case (iac_msgs::msg::CarMode::UNKNOWN) :
             default:
-                car_mode_ = transponder_msgs::msg::Transponder::STATE_UNKNOWN;
+                car_mode_ = transponder_msgs::msg::TransponderPosition::STATE_UNKNOWN;
                 break;
         }
 
@@ -176,7 +182,7 @@ private:
     }
 
     // Publishers / Subscribers / Timers
-    rclcpp::Publisher<transponder_msgs::msg::Transponder>::SharedPtr pub_Transponder_;
+    rclcpp::Publisher<transponder_msgs::msg::TransponderPosition>::SharedPtr pub_Transponder_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_Odometry_;
     // rclcpp::Subscription<iac_msgs::msg::CarMode>::SharedPtr sub_CarMode_;  // Needed to fill in the 'state' field
     rclcpp::TimerBase::SharedPtr timer_pushTransponder_;
@@ -185,7 +191,7 @@ private:
     uint8_t car_id_;
     nav_msgs::msg::Odometry odom_;
     geographic_msgs::msg::GeoPoint lla0_;
-    uint8_t car_mode_ = transponder_msgs::msg::Transponder::STATE_UNKNOWN;
+    uint8_t car_mode_ = transponder_msgs::msg::TransponderPosition::STATE_UNKNOWN;
 
 };
 

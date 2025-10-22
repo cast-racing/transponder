@@ -25,7 +25,7 @@
 #include <glob.h>
 
 #include "std_msgs/msg/string.hpp"
-#include "transponder_msgs/msg/transponder.hpp"
+#include "transponder_msgs/msg/transponder_position.hpp"
 
 #include "iac_udp_struct.h"
 
@@ -38,9 +38,9 @@ public:
 private:
 
     // Subscribers / Publishers / Timers
-    rclcpp::Subscription<transponder_msgs::msg::Transponder>::SharedPtr sub_Transponder_;
+    rclcpp::Subscription<transponder_msgs::msg::TransponderPosition>::SharedPtr sub_Transponder_;
 
-    rclcpp::Publisher<transponder_msgs::msg::Transponder>::SharedPtr pub_Transponder_;
+    rclcpp::Publisher<transponder_msgs::msg::TransponderPosition>::SharedPtr pub_Transponder_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_Version_;
 
     rclcpp::TimerBase::SharedPtr timer_1Hz_, timer_10s_;
@@ -82,7 +82,7 @@ private:
     bool parseChar(unsigned char x);
     uint8_t calc_crc8(const char* data, size_t len);
 
-    void callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg);
+    void callback_Transponder(const transponder_msgs::msg::TransponderPosition::SharedPtr msg);
     void publish_Transponder(TransponderUdpPacket transponder);
 
     void callback_1Hz();

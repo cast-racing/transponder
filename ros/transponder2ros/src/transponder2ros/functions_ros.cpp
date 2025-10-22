@@ -12,11 +12,11 @@ void transponder2ros::init_ros()
     std::string param_versionOut = this->get_parameter("version_out").as_string();
 
     // Publishers
-    pub_Transponder_ = this->create_publisher<transponder_msgs::msg::Transponder>(param_transponderIn, 1);
+    pub_Transponder_ = this->create_publisher<transponder_msgs::msg::TransponderPosition>(param_transponderIn, 1);
     pub_Version_ = this->create_publisher<std_msgs::msg::String>(param_versionOut, 10);
 
     // Subscribers
-    sub_Transponder_ = this->create_subscription<transponder_msgs::msg::Transponder>(
+    sub_Transponder_ = this->create_subscription<transponder_msgs::msg::TransponderPosition>(
         param_transponderOut,
         1,
         std::bind(&transponder2ros::callback_Transponder, this, std::placeholders::_1));
@@ -58,13 +58,14 @@ void transponder2ros::publish_Transponder(TransponderUdpPacket transponder)
     }
 
     // Publish the data
-    transponder_msgs::msg::Transponder msg;
+    transponder_msgs::msg::TransponderPosition msg;
 
     msg.header.stamp.sec = transponder.data.sec;
     msg.header.stamp.nanosec = transponder.data.nanosec;
     msg.header.frame_id = "map";
 
     msg.car_id = transponder.data.car_id;
+    msg.heartbeat = transponder.data.heartbeat;
     msg.lat = transponder.data.lat/1e7;
     msg.lon = transponder.data.lon/1e7;
     msg.alt = transponder.data.alt/1e3;
@@ -97,7 +98,7 @@ void transponder2ros::publish_Transponder(TransponderUdpPacket transponder)
 
 }
 
-void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transponder::SharedPtr msg)
+void transponder2ros::callback_Transponder(const transponder_msgs::msg::TransponderPosition::SharedPtr msg)
 {
     // Need to send Transponder data from here
     StructIacTransponder transponder;
@@ -106,6 +107,7 @@ void transponder2ros::callback_Transponder(const transponder_msgs::msg::Transpon
     transponder.sec = msg->header.stamp.sec;                // UTC time [ s ]
     transponder.nanosec = msg->header.stamp.nanosec;        // UTC time nanoseconds [ ns ]
     transponder.car_id = msg->car_id;                       // Car ID [ - ]
+    transponder.heartbeat = msg->heartbeat;                 // Rolling heartbeat counter; drop rate exposes link quality [ - ]
     transponder.lat = msg->lat*1e7;                         // Vehicle longitude [ dd.dd x 10^7 ]
     transponder.lon = msg->lon*1e7;                         // Vehicle latitude [ dd.dd x 10^7 ]
     transponder.alt = msg->alt*1e3;                         // Vehicle altitude [ mm ]

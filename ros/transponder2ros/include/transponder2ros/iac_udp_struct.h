@@ -19,12 +19,13 @@ struct __attribute__((packed)) StructIacTransponder
   int32_t sec;                   // UTC time seconds [ s ]
   uint32_t nanosec;              // UTC time nanoseconds [ ns ]
   uint8_t car_id;                // Car ID [ - ]
+  uint8_t heartbeat;             // Rolling heartbeat counter; drop rate exposes link quality [ - ]
   int32_t lat;                   // Vehicle longitude [ dd.dd x 10^7 ]
   int32_t lon;                   // Vehicle latitude [ dd.dd x 10^7 ]
   int32_t alt;                   // Vehicle altitude [ mm ]
   uint16_t heading;              // Vehicle GPS heading [ cdeg ]
   uint16_t vel;                  // Vehicle speed [ cm/s ]
-  uint8_t state;                 // Vehicle state [ - ], see transponder_msgs::msg::Transponder
+  uint8_t state;                 // Vehicle state [ - ], see transponder_msgs::msg::TransponderPosition
 };
 
 union TransponderUdpPacket

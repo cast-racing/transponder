@@ -8,11 +8,11 @@
 
 // Team Defines (comment / uncomment as required)
 
-#define TRANSPONDER_IP "10.42.17.210"  // #7 (Berkeley)
-#define COMPUTER_IP "10.42.17.200"
+// #define TRANSPONDER_IP "10.42.17.210"  // #7 (Berkeley)
+// #define COMPUTER_IP "10.42.17.200"
 
-// #define TRANSPONDER_IP "10.42.8.60"  // #8 (Caltech Racer)
-// #define COMPUTER_IP "10.42.8.4"
+#define TRANSPONDER_IP "10.42.8.60"  // #8 (Caltech Racer)
+#define COMPUTER_IP "10.42.8.4"
 
 // IP settings
 IPAddress local_IP(TRANSPONDER_IP);        // IP Address of the Transponder
@@ -149,6 +149,7 @@ void process_udp()
       sprintf(buf_, "        sec: %d\n"    ,xbee_packet.data.data.data.sec); Serial.print(buf_);
       sprintf(buf_, "    nanosec: %d\n"    ,xbee_packet.data.data.data.nanosec); Serial.print(buf_);
       sprintf(buf_, "        Car: %d\n"    ,xbee_packet.data.data.data.car_id); Serial.print(buf_);
+      sprintf(buf_, "  Heartbeat: %d\n"    ,xbee_packet.data.data.data.heartbeat); Serial.print(buf_);
       sprintf(buf_, "        Lat: %11.5f\n",xbee_packet.data.data.data.lat/1e7); Serial.print(buf_);
       sprintf(buf_, "        Lon: %11.5f\n",xbee_packet.data.data.data.lon/1e7); Serial.print(buf_);
       sprintf(buf_, "        Alt: %11.5f\n",xbee_packet.data.data.data.alt/1e3); Serial.print(buf_);
@@ -298,6 +299,7 @@ void xbee_state_machine(char x)
             sprintf(buf_, "        sec: %d\n"    ,data.data.sec); Serial.print(buf_);
             sprintf(buf_, "    nanosec: %d\n"    ,data.data.nanosec); Serial.print(buf_);
             sprintf(buf_, "        Car: %d\n"    ,data.data.car_id); Serial.print(buf_);
+            sprintf(buf_, "  Heartbeat: %d\n"    ,data.data.heartbeat); Serial.print(buf_);
             sprintf(buf_, "        Lat: %13.8f\n",data.data.lat/1e7); Serial.print(buf_);
             sprintf(buf_, "        Lon: %13.8f\n",data.data.lon/1e7); Serial.print(buf_);
             sprintf(buf_, "        Alt: %8.3f\n" ,data.data.alt/1e3); Serial.print(buf_);
