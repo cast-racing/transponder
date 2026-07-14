@@ -56,7 +56,7 @@ public:
         /*
         // For those that want to fill in the 'state' field, here's an example of how to do it
         // Each different team will have different modes, so this is just an example for CAST Racer
-        sub_CarMode_ = this->create_subscription<iac_msgs::msg::CarMode>(
+        sub_CarMode_ = this->create_subscription<vehicle_interfaces::msg::CarMode>(
             param_carModeIn,
             1,
             std::bind(
@@ -125,27 +125,27 @@ private:
     // For those that want to fill in the 'state' field, here's an example of how to do it
     // Each different team will have different modes, so this is just an example for CAST Racer
 
-    void callback_CarMode(const iac_msgs::msg::CarMode::SharedPtr msg)
+    void callback_CarMode(const vehicle_interfaces::msg::CarMode::SharedPtr msg)
     {
         // Save the latest odom data
         switch (msg->mode)
         {
-            case (iac_msgs::msg::CarMode::TERMINATE) :
-            case (iac_msgs::msg::CarMode::EMERGENCY_STOP) :
+            case (vehicle_interfaces::msg::CarMode::TERMINATE) :
+            case (vehicle_interfaces::msg::CarMode::EMERGENCY_STOP) :
                 car_mode_ = transponder_msgs::msg::Transponder::STATE_EMERGENCY_STOP;
                 break;
-            case (iac_msgs::msg::CarMode::CONTROLLED_STOP) :
+            case (vehicle_interfaces::msg::CarMode::CONTROLLED_STOP) :
                 car_mode_ = transponder_msgs::msg::Transponder::STATE_CONTROLLED_STOP;
                 break;
-            case (iac_msgs::msg::CarMode::ENGINE_IDLE) :
-            case (iac_msgs::msg::CarMode::PIT) :
-            case (iac_msgs::msg::CarMode::ADAPTIVE_CRUISE) :
-            case (iac_msgs::msg::CarMode::OVERTAKE_ALLOWED) :
-            case (iac_msgs::msg::CarMode::DEFENDER) :
-            case (iac_msgs::msg::CarMode::RACE) :
+            case (vehicle_interfaces::msg::CarMode::ENGINE_IDLE) :
+            case (vehicle_interfaces::msg::CarMode::PIT) :
+            case (vehicle_interfaces::msg::CarMode::ADAPTIVE_CRUISE) :
+            case (vehicle_interfaces::msg::CarMode::OVERTAKE_ALLOWED) :
+            case (vehicle_interfaces::msg::CarMode::DEFENDER) :
+            case (vehicle_interfaces::msg::CarMode::RACE) :
                 car_mode_ = transponder_msgs::msg::Transponder::STATE_NOMINAL;
                 break;
-            case (iac_msgs::msg::CarMode::UNKNOWN) :
+            case (vehicle_interfaces::msg::CarMode::UNKNOWN) :
             default:
                 car_mode_ = transponder_msgs::msg::Transponder::STATE_UNKNOWN;
                 break;
@@ -178,7 +178,7 @@ private:
     // Publishers / Subscribers / Timers
     rclcpp::Publisher<transponder_msgs::msg::Transponder>::SharedPtr pub_Transponder_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_Odometry_;
-    // rclcpp::Subscription<iac_msgs::msg::CarMode>::SharedPtr sub_CarMode_;  // Needed to fill in the 'state' field
+    // rclcpp::Subscription<vehicle_interfaces::msg::CarMode>::SharedPtr sub_CarMode_;  // Needed to fill in the 'state' field
     rclcpp::TimerBase::SharedPtr timer_pushTransponder_;
 
     // Variables
