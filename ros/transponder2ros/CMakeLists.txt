@@ -13,6 +13,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/usr/share/cmake/geographiclib")
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(iac_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geographic_msgs REQUIRED)
@@ -94,6 +95,7 @@ add_executable(odom2transponder_node src/odom2transponder_node.cpp)
         transponder_msgs
         geometry_msgs
         GeographicLib
+        iac_msgs
     )
     install(TARGETS
     odom2transponder_node

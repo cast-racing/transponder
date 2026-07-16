@@ -12,6 +12,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "geographic_msgs/msg/geo_point.hpp"
 #include "geometry_msgs/msg/quaternion.hpp"
+#include "iac_msgs/msg/car_mode.hpp"
 #include "transponder_msgs/msg/transponder.hpp"
 
 class Odom2Transponder : public rclcpp::Node
