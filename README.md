@@ -1,3 +1,7 @@
+# New version
+https://github.com/airacingtech/laguna_seca_multicar/tree/moises/initial_roe
+Automatic overtake flagging
+
 # Transponder
 
 Transponder between cars for the Indy Autonomous Challenge.
